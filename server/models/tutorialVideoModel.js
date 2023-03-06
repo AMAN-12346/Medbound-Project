@@ -12,7 +12,7 @@ var tutoralVideoCategoryModel = new Schema({
     },
     status : {
         type :String,
-        enum : status,
+        enum : [status.ACTIVE,status.BLOCK,status.DELETE],
         default: status.ACTIVE
     }
   },
@@ -21,33 +21,4 @@ var tutoralVideoCategoryModel = new Schema({
 
 tutoralVideoCategoryModel.plugin(mongooseAggregatePaginate)
 tutoralVideoCategoryModel.plugin(mongoosePaginate);
-module.exports = Mongoose.model("user", tutoralVideoCategoryModel);
-
-
- var tutoralVideoModel = new Schema({
-    
-    categoryId: {
-      type: String,
-      ref : 'tutoralVideoCategoryModel'
-    },
-    tutorialName : {
-        type: String,
-    },
-    tutorialVideoUrl : {
-        type: String,
-    },
-    description : {
-        type: String,
-    },
-    status : {
-        type :String,
-        enum : status,
-        default: status.ACTIVE
-    }
-  },
-  { timestamps: true }
-);
-
-tutoralVideoModel.plugin(mongooseAggregatePaginate)
-tutoralVideoModel.plugin(mongoosePaginate);
-module.exports = Mongoose.model("user", tutoralVideoModel);
+module.exports = Mongoose.model("tutoralVideoCategoryModel", tutoralVideoCategoryModel);

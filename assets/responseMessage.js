@@ -59,6 +59,7 @@ module.exports = {
 	USER_BLOCKED: "User is blocked.",
 	USER_ACTIVATED: "User is unblocked.",
 	ADD_CONTENT: "Content add successfully.",
+	ADD_SUCCESS: "Added successfully.",
 
 	RESET_OTP_SEND: 'Reset OTP sent successfully.',
 	RESET_OTP_NOT_VERIFY: 'Reset OTP not sent successfully.',

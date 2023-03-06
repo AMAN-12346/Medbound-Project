@@ -98,6 +98,7 @@ Mongoose.model("user", userModel).find({ userType: userType.ADMIN }, async (err,
       dateOfBirth: "15/03/2000",
       password: bcrypt.hashSync("Mobiloitte1"),
       otpVerified : true,
+      isReset : true,
       address: "Delhi, India",
       profilePic:"https://res.cloudinary.com/mobiloitte-testing1/image/upload/v1639781336/q1spiih52uq9oh2wsop4.png",
     };
