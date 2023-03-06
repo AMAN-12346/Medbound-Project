@@ -69,7 +69,6 @@ definitions:
       newPassword:
         type: string
 
-        
   userLogin:
     required:
       - email
@@ -77,7 +76,79 @@ definitions:
     properties:
       email:
         type: string
-      password: 
+      password:
         type: string
 
- 
+  addFroum:
+    required:
+      - name
+      - description
+      - activities
+      - format
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      activities:
+        type: string
+      format:
+        type: string
+
+  addStaticContent:
+    required:
+      - type
+      - title
+      - description
+    properties:
+      type:
+        type: string
+      title:
+        type: string
+      description:
+        type: string
+
+  editStaticContent:
+    required:
+      - _id
+      - title
+      - description
+    properties:
+      _id:
+        type: string
+      title:
+        type: string
+      description:
+        type: string
+      url:
+        type: string
+
+  addFAQ:
+    required:
+      - question
+      - answer
+    properties:
+      question:
+        type: string
+      answer:
+        type: string
+
+  editFAQ:
+    required:
+      - _id
+      - question
+      - answer
+    properties:
+      _id:
+        type: string
+      question:
+        type: string
+      answer:
+        type: strings
+
+  deleteFAQ:
+    required:
+      - _id
+    properties:
+      _id:
+        type: string

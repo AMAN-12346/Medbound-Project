@@ -159,6 +159,23 @@ module.exports = {
 	EDIT_SERVICE_AREA: "Coupon edited successfully.",
 	EDIT_CONTACT_US: "Contact us edited successfully.",
 	EDIT_CATEGORY_ACTIVITY: "Category activity edited successfully.",
+
+
+
+	FORUM_CREATED : "Forum created Successfully...",
+	FORUM_UPDATED : "Forum updated Successfully...",
+	FORUM_NOT_FOUND : "Forum not Found...",
+	STATIC_CONTENT : "Static allready Added succssfully...",
+	DATA_SAVED : "Static Content Sava succssfully...",
+	STATIC_NOT_FOUND: 'static Containt not found.',
+
+
+
+
+
+
+
+
 	SMS_BODY: (otp) => `Your verification code is  ${otp}`,
 	REFER_SMS_BODY: (first_name, last_name, referral_code, iosLink, androidLink, webLink) => `${first_name} ${last_name} wants to refer you on PayPenny application. 
 	Please use ${referral_code} as the referral code. Website Link : ${webLink}, Android Link : ${androidLink}, IOS Link : ${iosLink}`
