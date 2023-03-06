@@ -3,7 +3,7 @@
   "hostAddress": "http://localhost:8521/",
   "databaseHost": "localhost",
   "databasePort": "27017",
-  "databaseName": "test",
+  "databaseName": "medbound-23024067",
   "jwtsecret": "nodejwt",
   "jwtresetsecret": "nodejwt",
   "nodemailer": {
