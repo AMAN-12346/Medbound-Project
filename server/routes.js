@@ -1,5 +1,6 @@
 //v7 imports
 import user from "./api/v1/controllers/user/routes";
+import admin from "./api/v1/controllers/Admin/routes";
 
 
 /**
@@ -12,6 +13,7 @@ import user from "./api/v1/controllers/user/routes";
 export default function routes(app) {
 
   app.use('/api/v1/user', user);
+  app.use('/api/v1/admin', admin);
   
 
 

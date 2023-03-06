@@ -95,8 +95,9 @@ Mongoose.model("user", userModel).find({ userType: userType.ADMIN }, async (err,
       countryCode: "+91",
       mobileNumber: "9931627686",
       email: "no-vishal@indicchain.com",
-      dateOfBirth: "24/04/1996",
+      dateOfBirth: "15/03/2000",
       password: bcrypt.hashSync("Mobiloitte1"),
+      otpVerified : true,
       address: "Delhi, India",
       profilePic:"https://res.cloudinary.com/mobiloitte-testing1/image/upload/v1639781336/q1spiih52uq9oh2wsop4.png",
     };
@@ -104,7 +105,7 @@ Mongoose.model("user", userModel).find({ userType: userType.ADMIN }, async (err,
       if (err1) {
         console.log("Default admin  creation error", err1);
       } else {
-        console.log("Default admin created 😀😀", result1);
+        console.log("Default admin created 😀😀");
       }
     });
   }

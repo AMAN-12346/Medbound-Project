@@ -15,86 +15,14 @@ const secret = speakeasy.generateSecret({ length: 10 });
 import { userServices } from '../../services/user';
 const { userCheck, paginateSearch, insertManyUser, createAddress, checkUserExists, emailMobileExist, createUser, findUser, updateUser, updateUserById, checkSocialLogin } = userServices;
 
-export class userController {
-
-
-    /**
-     * @swagger
-     * /user/userSignUp:
-     *   post:
-     *     tags:
-     *       - USER
-     *     description: userSignUp
-     *     produces:
-     *       - application/json
-     *     parameters:
-     *       - name: userSignUp
-     *         description: userSignUp
-     *         in: body
-     *         required: true
-     *         schema:
-     *           $ref: '#/definitions/userSignup'
-     *     responses:
-     *       200:
-     *         description: User created successfully
-     *       409:
-     *         description: This email already exists ./ This mobile number already exists.
-     *       400:
-     *         description:  Password and confirm password does not match
-     *       501:
-     *         description: Something went wrong.
-     *       500:
-     *         description: Internal server error.
-     */
-    async userSignUp(req, res, next) {
-        const validationSchema = {
-            firstName: Joi.string().required(),
-            lastName: Joi.string().required(),
-            countryCode: Joi.string().required(),
-            mobileNumber: Joi.string().required(),
-            dateOfBirth: Joi.string().required(),
-            email: Joi.string().required(),
-            password: Joi.string().required(),
-            confirmPassword: Joi.string().required()
-        };
-        try {
-            const validatedBody = await Joi.validate(req.body, validationSchema);
-            const { firstName, surName, countryCode, mobileNumber, email, password, dateOfBirth, confirmPassword, otp, otpExpireTime } = validatedBody;
-            var userInfo = await checkUserExists(mobileNumber, email);
-            if (userInfo) {
-                if (userInfo.mobileNumber == mobileNumber) {
-                    throw apiError.conflict(responseMessage.MOBILE_EXIST);
-                }
-                else {
-                    throw apiError.conflict(responseMessage.EMAIL_EXIST);
-                }
-            }
-            else {
-                if (password != req.body.confirmPassword) {
-                    throw apiError.badRequest(responseMessage.NOT_MATCH);
-                }
-                validatedBody.otp = commonFunction.getOTP();
-                validatedBody.otpExpireTime = Date.now() + 180000;
-                validatedBody.password = bcrypt.hashSync(validatedBody.password);
-                validatedBody.refferalCode = commonFunction.makeReferral();
-                // await commonFunction.sendEmailOtp(email, validatedBody.otp);
-                // await commonFunction.sendSms(validatedBody.countryCode + validatedBody.mobileNumber, validatedBody.otp);
-                var result = await createUser(validatedBody)
-                return res.json(new response(result, responseMessage.USER_CREATED));
-
-            }
-        } catch (error) {
-            console.log("error ==========> 79", error)
-            return next(error);
-        }
-    }
+export class adminController {
 
     /**
      * @swagger
-     * /user/verifyOTP:
+     * /admin/verifyOTP:
      *   post:
      *     tags:
-     *       - USER
+     *       - ADMIN
      *     description: verifyOTP
      *     produces:
      *       - application/json
@@ -157,10 +85,10 @@ export class userController {
 
     /**
      * @swagger
-     * /user/resendOTP:
+     * /admin/resendOTP:
      *   post:
      *     tags:
-     *       - USER
+     *       - ADMIN
      *     description: resendOTP
      *     produces:
      *       - application/json
@@ -212,10 +140,10 @@ export class userController {
 
     /**
      * @swagger
-     * /user/forgotPassword:
+     * /admin/forgotPassword:
      *   post:
      *     tags:
-     *       - USER
+     *       - ADMIN
      *     description: forgotPassword
      *     produces:
      *       - application/json
@@ -266,10 +194,10 @@ export class userController {
 
     /**
      * @swagger
-     * /user/resetPassword/{token}:
+     * /admin/resetPassword/{token}:
      *   put:
      *     tags:
-     *       - USER
+     *       - ADMIN
      *     description: resetPassword
      *     produces:
      *       - application/json
@@ -302,7 +230,7 @@ export class userController {
             var validatedBody = await Joi.validate(req.body, validationSchema);
             const { token } = req.params;
             var result = await jwt.verify(token, config.get('jwtsecret'))
-            var userResult = await findUser({ _id: result._id, userType: { $in: [userType.USER] } })
+            var userResult = await findUser({ _id: result._id, userType: { $in: [userType.ADMIN] } })
             if (!userResult) {
                 throw apiError.notFound(responseMessage.USER_NOT_FOUND);
             }
@@ -316,10 +244,10 @@ export class userController {
     }
     /**
      * @swagger
-     * /user/changePassword:
+     * /admin/changePassword:
      *   put:
      *     tags:
-     *       - USER
+     *       - ADMIN
      *     description: changePassword
      *     produces:
      *       - application/json
@@ -355,7 +283,7 @@ export class userController {
         };
         try {
             let validatedBody = await Joi.validate(req.body, validationSchema);
-            let userResult = await findUser({ _id: req.userId, userType: { $in: [userType.USER] } });
+            let userResult = await findUser({ _id: req.userId, userType: { $in: [userType.ADMIN] } });
             if (!userResult) {
                 throw apiError.notFound(responseMessage.USER_NOT_FOUND);
             }
@@ -371,10 +299,10 @@ export class userController {
 
     /**
      * @swagger
-     * /user/userLogin:
+     * /admin/userLogin:
      *   post:
      *     tags:
-     *       - USER
+     *       - ADMIN
      *     description: login
      *     produces:
      *       - application/json
@@ -411,7 +339,7 @@ export class userController {
                 throw apiError.notFound(responseMessage.USER_NOT_FOUND);
             }
             if (userResult.otpVerified == false || userResult.isReset == false) {
-                throw apiError.invalid("responseMessage.INCORRECT_LOGIN");
+                throw apiError.invalid(">>>>>>>>>responseMessage.INCORRECT_LOGIN");
             }
             if (!bcrypt.compareSync(validatedBody.password, userResult.password)) {
                 throw apiError.invalid(responseMessage.INCORRECT_LOGIN);
@@ -433,10 +361,10 @@ export class userController {
     }
     /**
       * @swagger
-      * /user/getProfile:
+      * /admin/getProfile:
       *   get:
       *     tags:
-      *       - USER
+      *       - ADMIN
       *     description: getProfile
       *     produces:
       *       - application/json
@@ -457,7 +385,7 @@ export class userController {
       */
     async getProfile(req, res, next) {
         try {
-            let userResult = await findUser({ _id: req.userId, userType: { $in: [userType.USER, userType.EXPERT, userType.AGENT] } });
+            let userResult = await findUser({ _id: req.userId, userType: { $in: [userType.ADMIN, userType.EXPERT, userType.AGENT] } });
             if (!userResult) {
                 throw apiError.notFound(responseMessage.USER_NOT_FOUND);
             }
@@ -468,4 +396,4 @@ export class userController {
     }
 }
 
-export default new userController()
+export default new adminController()
