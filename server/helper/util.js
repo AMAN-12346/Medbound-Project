@@ -20,11 +20,12 @@ import cloudinary from 'cloudinary';
 import status from "../enums/status"
 import userType from "../enums/userType"
 
-import userModel from "../models/user"
+import userModel from "../models/user";
+
 cloudinary.config({
-  cloud_name: config.get('cloudinary.cloud_name'),
-  api_key: config.get('cloudinary.api_key'),
-  api_secret: config.get('cloudinary.api_secret')
+  cloud_name: "dhdvtnehi",
+  api_key: "516765691967195",
+  api_secret: "VogCyCi7YWCwKUSHduwVxpd5VxE"
 });
 
 // const accountSid = config.get('twilio.accountSid');
@@ -39,6 +40,33 @@ module.exports = {
     var otp = Math.floor(100000 + Math.random() * 900000);
     return otp;
   },
+
+
+
+  getImageUrlUpdated: async (filePath) => {
+    var result = await cloudinary.v2.uploader.upload(filePath);
+    return result.secure_url;
+  },
+
+
+  uploadImage(image) {
+    return new Promise((resolve, reject) => {
+      cloudinary.uploader.upload(image, function (error, result) {
+        console.log(result);
+        if (error) {
+          reject(error);
+        }
+        else {
+          resolve(result.url)
+        }
+      });
+    })
+  },
+
+
+
+
+
 
 
   sendSms: (number, otp) => {
@@ -93,6 +121,14 @@ module.exports = {
   //   console.log("82", result)
   //   return result.secure_url;
   // },
+
+
+
+
+
+
+
+
   getImageUrl: async (files) => {
     var result = await cloudinary.v2.uploader.upload(files[0].path,{resource_type:"raw"})
     console.log("82", result)
@@ -189,19 +225,7 @@ module.exports = {
     return result;
   },
 
-  uploadImage(image) {
-    return new Promise((resolve, reject) => {
-      cloudinary.uploader.upload(image, function (error, result) {
-        console.log(result);
-        if (error) {
-          reject(error);
-        }
-        else {
-          resolve(result.url)
-        }
-      });
-    })
-  },
+
 
   makeReferral() {
     var result = '';

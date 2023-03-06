@@ -17,7 +17,6 @@ const { userCheck, paginateSearch, insertManyUser, createAddress, checkUserExist
 
 export class userController {
 
-
     /**
      * @swagger
      * /user/userSignUp:
