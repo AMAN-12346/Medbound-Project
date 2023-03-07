@@ -9,6 +9,9 @@ import flashCards from "./api/v1/controllers/flashCards/routes";
 import forum from "./api/v1/controllers/ForumAndSocial_Clubs/routes";
 import statics from "./api/v1/controllers/faq/routes";
 import faq from "./api/v1/controllers/faq/routes";
+import blog from "./api/v1/controllers/Blog/routes";
+import medBound from "./api/v1/controllers/MedBoundCMS/routes";
+import medBoundTimes from "./api/v1/controllers/MedBoundTimes/routes";
 
 
 
@@ -30,6 +33,9 @@ export default function routes(app) {
   app.use('/api/v1/forum', forum);
   app.use("/api/v1/static", statics);
   app.use("/api/v1/faq", faq);
+  app.use("/api/v1/blog", blog);
+  app.use("/api/v1/medBoundCms", medBound);
+  app.use("/api/v1/medBoundTimes", medBoundTimes);
 
   
 

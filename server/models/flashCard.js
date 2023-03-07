@@ -49,7 +49,7 @@ var flashCardModel = new Schema({
 },
     { timestamps: true }
 );
-
+flashCardModel.index({ location: "2dsphere" })
 flashCardModel.plugin(mongooseAggregatePaginate)
 flashCardModel.plugin(mongoosePaginate);
 module.exports = Mongoose.model("flashCardModel", flashCardModel);
