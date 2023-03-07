@@ -410,7 +410,7 @@ export class userController {
                 throw apiError.notFound(responseMessage.USER_NOT_FOUND);
             }
             if (userResult.otpVerified == false || userResult.isReset == false) {
-                throw apiError.invalid("responseMessage.INCORRECT_LOGIN");
+                throw apiError.invalid(responseMessage.INCORRECT_LOGIN);
             }
             if (!bcrypt.compareSync(validatedBody.password, userResult.password)) {
                 throw apiError.invalid(responseMessage.INCORRECT_LOGIN);
@@ -464,7 +464,7 @@ export class userController {
         } catch (error) {
             return next(error);
         }
-    }
+    } 
 }
 
 export default new userController()

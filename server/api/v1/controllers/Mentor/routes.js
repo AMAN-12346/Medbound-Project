@@ -4,11 +4,10 @@ import auth from "../../../../helper/auth";
 import upload from "../../../../helper/uploadHandler";
 
 export default Express.Router()
-  .use(upload.uploadFile)
 
+  .post("/viewMentor", controller.viewMentor)
+  
   .use(auth.verifyToken)
-  .post("/addFroum", controller.addFroum)
-  .put("/editFroum", controller.editFroum)
-
-  .post("/addClub", controller.addClub)
-  .put("/editClub", controller.editClub);
+  .use(upload.uploadFile)
+  .post("/addMentor", controller.addMentor)
+  .put("/editAlumini", controller.editMentor);
