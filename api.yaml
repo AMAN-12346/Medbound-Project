@@ -1,0 +1,257 @@
+definitions:
+  securitySchemes:
+    tokenauth:
+      type: basic
+      description: bearer auth
+      name: Authorization
+      in: header
+    demouser:
+      type: basic
+  #-------------------------------------------------------------------
+  #---------------------------ADMIN----------------------------------
+  #-------------------------------------------------------------------
+  userSignup:
+    required:
+      - firstName
+      - lastName
+      - countryCode
+      - mobileNumber
+      - email
+      - password
+      - confirmPassword
+      - dateOfBirth
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      countryCode:
+        type: string
+      mobileNumber:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      confirmPassword:
+        type: string
+      dateOfBirth:
+        type: string
+
+  verifyOTP:
+    required:
+      - email
+      - otp
+    properties:
+      email:
+        type: string
+      otp:
+        type: string
+
+  resendOTP:
+    required:
+      - email
+    properties:
+      email:
+        type: string
+
+  forgotPassword:
+    required:
+      - email
+    properties:
+      email:
+        type: string
+
+  resetPassword:
+    required:
+      - newPassword
+    properties:
+      newPassword:
+        type: string
+
+  userLogin:
+    required:
+      - email
+      - password
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+
+  addFroum:
+    required:
+      - name
+      - description
+      - activities
+      - format
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+      activities:
+        type: string
+      format:
+        type: string
+
+  addStaticContent:
+    required:
+      - type
+      - title
+      - description
+    properties:
+      type:
+        type: string
+      title:
+        type: string
+      description:
+        type: string
+
+  editStaticContent:
+    required:
+      - _id
+      - title
+      - description
+    properties:
+      _id:
+        type: string
+      title:
+        type: string
+      description:
+        type: string
+      url:
+        type: string
+
+  addFAQ:
+    required:
+      - question
+      - answer
+    properties:
+      question:
+        type: string
+      answer:
+        type: string
+
+  editFAQ:
+    required:
+      - _id
+      - question
+      - answer
+    properties:
+      _id:
+        type: string
+      question:
+        type: string
+      answer:
+        type: strings
+
+  deleteFAQ:
+    required:
+      - _id
+    properties:
+      _id:
+        type: string
+
+
+  addFlashcard:
+    required:
+      - categoryId
+      - subCategoryId
+      - title
+      - authorName
+      - subject
+    properties:
+      categoryId:
+        type: string
+      subCategoryId:
+        type: string
+      title:
+        type: string
+      authorName:
+        type: string
+      subject:
+        type: string
+      flashCards:
+        type: array
+        items:
+          type: object
+          properties:
+            question:
+              type: string
+            image:
+              type: string
+            Description:
+              type: string
+
+
+
+  editFlashcard:
+    required:
+      - _id
+      - categoryId
+      - subCategoryId
+      - title
+      - authorName
+      - subject
+    properties:
+      _id:
+        type: string
+      categoryId:
+        type: string
+      subCategoryId:
+        type: string
+      title:
+        type: string
+      authorName:
+        type: string
+      subject:
+        type: string
+      flashCards:
+        type: array
+        items:
+          type: object
+          properties:
+            question:
+              type: string
+            image:
+              type: string
+            Description:
+              type: string
+
+
+
+
+
+  updateAbout:
+    required:
+
+      - description
+      - benefits
+      - collarators
+      - features
+      - certificate_Link
+      - organisation_Link
+      - updatedAt
+    properties:
+
+      description:
+        type: string
+      benefits:
+        type: string
+      features:
+        type: string
+      certificate_Link:
+        type: string
+      organisation_Link:
+        type: string
+      updatedAt:
+        type: date
+      collarators:
+        type: array
+        items:
+          type: object
+          properties:
+            file:
+              type: string
+    

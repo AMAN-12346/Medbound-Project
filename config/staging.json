@@ -1,0 +1,46 @@
+{
+  "port": 2001,
+  "hostAddress": "http://182.72.203.245:8521/",
+  "databaseHost": "localhost",
+  "databasePort": "27017",
+  "databaseName": "medbound-23024067",
+  "jwtsecret": "nodejwt",
+  "jwtresetsecret": "nodejwt",
+  "nodemailer": {
+    "service": "gmail",
+    "email": "fortestingpurpose0077@gmail.com",
+    "password": "Mobiloitte@1"
+  },
+  "jwtOptions": {
+    "expiresIn": "24h"
+  },
+  "swaggerDefinition": {
+    "info": {
+      "title": "test",
+      "version": "2.0",
+      "description": "test API Docs"
+    },
+    "basePath": "/api/v1",
+    "securityDefinitions": {
+      "tokenauth": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  },
+  "AWS": {
+    "accessKeyId": "AKIA4WJ5ARST5XSQGXWY",
+    "secretAccessKey": "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",
+    "region": "ap-south-1",
+    "smsSecret": "nodesms"
+  },
+  "cloudinary": {
+    "cloud_name": "mobiloitte-testing1",
+    "api_key": "312558533198362",
+    "api_secret": "7syPAYHWJAUM1Z46rIULFaUlYu4"
+  }
+
+  
+
+}
