@@ -1,10 +1,8 @@
 import Mongoose, { Schema, Types } from "mongoose";
 import mongoosePaginate from "mongoose-paginate";
 import mongooseAggregatePaginate from "mongoose-aggregate-paginate";
-import userType from "../enums/userType";
-import status from "../enums/status";
 
-var forumodel = new Schema(
+var Clubodel = new Schema(
   {
     name: {
       type: String,
@@ -20,11 +18,14 @@ var forumodel = new Schema(
 
     format : {
         type: String,
+    },
+    photo : {
+        type : String
     }
   },
   { timestamps: true }
 );
-forumodel.index({ location: "2dsphere" })
-forumodel.plugin(mongooseAggregatePaginate)
-forumodel.plugin(mongoosePaginate);
-module.exports = Mongoose.model("Forum", forumodel);
+Clubodel.index({ location: "2dsphere" })
+Clubodel.plugin(mongooseAggregatePaginate)
+Clubodel.plugin(mongoosePaginate);
+module.exports = Mongoose.model("Club", Clubodel);

@@ -59,6 +59,7 @@ module.exports = {
 	USER_BLOCKED: "User is blocked.",
 	USER_ACTIVATED: "User is unblocked.",
 	ADD_CONTENT: "Content add successfully.",
+	ADD_SUCCESS: "Added successfully.",
 
 	RESET_OTP_SEND: 'Reset OTP sent successfully.',
 	RESET_OTP_NOT_VERIFY: 'Reset OTP not sent successfully.',
@@ -163,11 +164,31 @@ module.exports = {
 
 
 	FORUM_CREATED : "Forum created Successfully...",
+	CLUB_CREATED : "Forum created Successfully...",
 	FORUM_UPDATED : "Forum updated Successfully...",
+	CLUB_UPDATED : "Forum updated Successfully...",
 	FORUM_NOT_FOUND : "Forum not Found...",
+	CLUB_NOT_FOUND : "Forum not Found...",
 	STATIC_CONTENT : "Static allready Added succssfully...",
 	DATA_SAVED : "Static Content Sava succssfully...",
 	STATIC_NOT_FOUND: 'static Containt not found.',
+
+	WEBINAR_NOT_FOUND : "Webinar not Found...",
+	WEBINAR_CREATED : "Webinar created Successfully...",
+	WEBINAR_UPDATED : "Webinar Updated Successfully...",
+	WEBIBAR_DETAILS : "Webinar found Successfully..",
+
+	MENTOR_CREATED : "Mentor created Successfully...",
+	MENTOR_UPDATED : "Mentor Updated Successfully...",
+	MENTOR_NOT_FOUND : "Mentor NOT found",
+	MENTOR_FOUND : "Mentor found Successfully",
+	ALUMINI_CREATED : "Mentor created Successfully...",
+	ALUMINI_UPDATED : "Mentor Updated Successfully...",
+	ALUMINI_NOT_FOUND : "Mentor NOT found",
+	ALUMINI_FOUND : "Mentor found Successfully",
+
+
+
 
 
 
