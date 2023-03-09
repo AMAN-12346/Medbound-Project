@@ -2,9 +2,7 @@ import Config from "config";
 import Routes from "./routes";
 import Server from "./common/server";
 
-const dbUrl = `mongodb://${Config.get("databaseHost")}:${Config.get(
-  "databasePort"
-)}/${Config.get("databaseName")}`;
+const dbUrl = "mongodb+srv://booking:booking123@cluster0.4olhgpv.mongodb.net/test";
 const server = new Server()
   .router(Routes)
   .configureSwagger(Config.get("swaggerDefinition"))
