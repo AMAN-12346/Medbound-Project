@@ -14,6 +14,9 @@ const froumServices = {
   findForum: async (query) => {
     return await froummodel.findOne(query);
   },
+  findList: async (query) => {
+    return await froummodel.find(query);
+  },
   findClub: async (query) => {
     return await froummodel.findOne(query);
   },

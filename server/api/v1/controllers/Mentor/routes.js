@@ -5,6 +5,7 @@ import upload from "../../../../helper/uploadHandler";
 
 export default Express.Router()
 
+.get("/listMentor",controller.listMentor)
   .post("/viewMentor", controller.viewMentor)
   
   .use(auth.verifyToken)

@@ -14,6 +14,9 @@ const WebinarServices = {
   findWebibar: async (query) => {
     return await WebinarModel.findOne(query);
   },
+  findList: async (query) => {
+    return await WebinarModel.find(query);
+  },
 };
 
 module.exports = { WebinarServices };

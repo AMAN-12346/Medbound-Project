@@ -15,9 +15,54 @@ const secret = speakeasy.generateSecret({ length: 10 });
 import { userServices } from "../../services/user";
 const { findUser } = userServices;
 import { WebinarServices } from "../../services/Webinar";
-const { createWebinar, UpdateWebinar, findWebibar } = WebinarServices;
-
+const { createWebinar, UpdateWebinar, findWebibar,findList } = WebinarServices;
+import queryHandler from '../../../../helper/query';
 export class WebinarController {
+
+
+  /**
+ * @swagger
+ * /webinar/listWebinar:
+ *   get:
+ *     tags:
+ *       - Webinar
+ *     description: addFroum
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Webinar created successfully.
+ *       501:
+ *         description: Something went wrong.
+ *       500:
+ *         description: Internal server error.
+ */
+  async listWebinar(req, res, next) {
+    try {
+      let query = { status: { $ne: 'DELETE' } }
+      let appen = await queryHandler.queryWithoutPagination(req.query)
+
+      let finalQuery = {
+        ...query,
+        ...appen
+      }
+      let data = await findList(finalQuery)
+      if (!data) {
+        throw apiError.conflict(responseMessage.DATA_NOT_FOUND);
+      }
+      else {
+        return res.json(new response(data, responseMessage.DATA_FOUND));
+      }
+    } catch (error) {
+      console.log("error ==========> 79", error)
+      return next(error);
+    }
+  }
+
+
+
+
+
   /**
    * @swagger
    * /webinar/addWebinar:
@@ -91,10 +136,10 @@ export class WebinarController {
         validatedBody.Webinar_Image = req.files[0].path;
         req.body.Speaker_Image = await commonFunction.getImageUrlUpdated(req.files[0].path);
         validatedBody.Speaker_Image = req.files[0].path;
-        const result = await createWebinar(validatedBody);
+        const result = await createWebinar(req.body);
         return res.json(new response(responseMessage.FORUM_CREATED, result));
       }
-      const result = await createWebinar(validatedBody);
+      const result = await createWebinar(req.body);
       return res.json(new response(responseMessage.FORUM_CREATED, result));
     } catch (error) {
       console.log(error);
@@ -223,7 +268,7 @@ export class WebinarController {
   async viewWebinar(req, res, next) {
     try {
       var validatedBody = await Joi.validate(req.body);
-      const {_id  } = validatedBody;
+      const { _id } = validatedBody;
       var checkWebinarExits = await findWebibar({ _id: validatedBody.WebinarID });
       if (!checkWebinarExits) {
         throw apiError.notFound(responseMessage.FORUM_CREATED);

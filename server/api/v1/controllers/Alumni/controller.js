@@ -15,9 +15,55 @@ const secret = speakeasy.generateSecret({ length: 10 });
 import { userServices } from "../../services/user";
 const { findUser } = userServices;
 import { AluminiServices } from "../../services/Alumini.js";
-const { findAlumini, UpdateAlumini, createAlumini } = AluminiServices;
+const { findAlumini, UpdateAlumini, createAlumini ,findList} = AluminiServices;
+import queryHandler from '../../../../helper/query';
+
 
 export class AluminiController {
+
+
+  /**
+   * @swagger
+   * /alumini/listAlumini:
+   *   get:
+   *     tags:
+   *       - ALUMINI
+   *     description: addAlumini
+   *     produces:
+   *       - application/json
+   *     responses:
+   *       200:
+   *         description: Alumini created successfully
+   *       501:
+   *         description: Something went wrong.
+   *       500:
+   *         description: Internal server error.
+   */
+
+   async listAlumini(req, res, next) {
+    try {
+      let query = {status: { $ne: 'DELETE' } }
+      let appen =  await queryHandler.queryWithoutPagination(req.query)
+
+      let finalQuery = {
+          ...query,
+          ...appen
+      }
+      let data = await findList(finalQuery)
+      if (!data) {
+          throw apiError.conflict(responseMessage.DATA_NOT_FOUND);
+      }
+      else {
+          return res.json(new response(data, responseMessage.DATA_FOUND));
+      }
+  } catch (error) {
+      console.log("error ==========> 79", error)
+      return next(error);
+  }
+  }
+
+
+
   /**
    * @swagger
    * /alumini/addAlumini:

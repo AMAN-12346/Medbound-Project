@@ -1,5 +1,5 @@
 {
-  "port": 2001,
+  "port": 1967,
   "hostAddress": "http://localhost:8521/",
   "databaseHost": "localhost",
   "databasePort": "27017",

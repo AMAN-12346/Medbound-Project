@@ -4,6 +4,7 @@ import auth from "../../../../helper/auth";
 import upload from "../../../../helper/uploadHandler";
 
 export default Express.Router()
+  .get("/listWebinar", controller.listWebinar)
   .post("/viewWebinar", controller.viewWebinar)
 
   .use(upload.uploadFile)

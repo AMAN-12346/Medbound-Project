@@ -13,6 +13,8 @@ import speakeasy from 'speakeasy';
 import userType from "../../../../enums/userType";
 const secret = speakeasy.generateSecret({ length: 10 });
 import { flashCardsServices } from '../../services/flashCards';
+import queryHandler from '../../../../helper/query';
+
 const { createFlashCardCategory, findFlashCardCategory, findFlashCardCategoryList, findandUpdateFlashCardCategory, createFlashCardSubCategory,
     findFlashCardSubCategory, findFlashCardSubCategoryList, findandUpdateFlashCardSubCategory
     , createFlashCard, findFlashCard, findFlashCardList, findandUpdateFlashCard
@@ -100,7 +102,13 @@ export class flashCard {
         try {
 
             let query = { status: { $ne: status.DELETE } }
-            var categoryList = await findFlashCardCategory(query);
+            let appen =  await queryHandler.queryWithoutPagination(req.query)
+
+            let finalQuery = {
+                ...query,
+                ...appen
+            }
+            var categoryList = await findFlashCardCategory(finalQuery);
             if (!categoryList) {
                 throw apiError.conflict(responseMessage.NOT_FOUND);
 
@@ -419,7 +427,15 @@ export class flashCard {
         try {
 
             let query = { status: { $ne: status.DELETE } }
-            var categoryList = await findFlashCardSubCategoryList(query);
+            let appen =  await queryHandler.queryWithoutPagination(req.query)
+
+            let finalQuery = {
+                ...query,
+                ...appen
+            }
+
+
+            var categoryList = await findFlashCardSubCategoryList(finalQuery);
             if (!categoryList) {
                 throw apiError.conflict(responseMessage.NOT_FOUND);
 
@@ -965,7 +981,15 @@ export class flashCard {
 
         try {
             
-            var flashcard = await findFlashCardList({status : {$ne : status.DELETE}});
+            let query =  {status : {$ne : status.DELETE}}
+            let appen =  await queryHandler.queryWithoutPagination(req.query)
+
+            let finalQuery = {
+                ...query,
+                ...appen
+            }
+
+            var flashcard = await findFlashCardList(finalQuery);
             if (!flashcard) {
                 throw apiError.conflict(`Flashcard ${responseMessage.NOT_FOUND}`);
             }

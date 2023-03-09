@@ -11,6 +11,7 @@ import jwt from "jsonwebtoken";
 import status from "../../../../enums/status";
 import speakeasy from "speakeasy";
 import userType from "../../../../enums/userType";
+import queryHandler from '../../../../helper/query';
 const secret = speakeasy.generateSecret({ length: 10 });
 import { userServices } from "../../services/user";
 const { findUser } = userServices;
@@ -22,9 +23,51 @@ const {
   createClub,
   UpdateClub,
   findClub,
+  findList
 } = froumServices;
 
 export class froumController {
+
+
+  /**
+   * @swagger
+   * /forum/listFroum:
+   *   get:
+   *     tags:
+   *       - Forum And Social_Clubs
+   *     description: addFroum
+   *     produces:
+   *       - application/json
+   *     responses:
+   *       200:
+   *         description: Forum created successfully
+   *       501:
+   *         description: Something went wrong.
+   *       500:
+   *         description: Internal server error.
+   */
+   async listFroum(req, res, next) {
+    try {
+      let query = {status: { $ne: 'DELETE' } }
+      let appen =  await queryHandler.queryWithoutPagination(req.query)
+
+      let finalQuery = {
+          ...query,
+          ...appen
+      }
+      let data = await findList(finalQuery)
+      if (!data) {
+          throw apiError.conflict(responseMessage.DATA_NOT_FOUND);
+      }
+      else {
+          return res.json(new response(data, responseMessage.DATA_FOUND));
+      }
+  } catch (error) {
+      console.log("error ==========> 79", error)
+      return next(error);
+  }
+  }
+
   /**
    * @swagger
    * /forum/addFroum:
