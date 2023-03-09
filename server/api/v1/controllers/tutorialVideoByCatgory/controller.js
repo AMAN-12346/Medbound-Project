@@ -6,7 +6,7 @@ import apiError from '../../../../helper/apiError';
 import response from '../../../../../assets/response';
 import bcrypt from 'bcryptjs';
 import responseMessage from '../../../../../assets/responseMessage';
-import commonFunction from '../../../../helper/util';
+import queryHandler from '../../../../helper/query';
 import jwt from 'jsonwebtoken';
 import status from '../../../../enums/status';
 import speakeasy from 'speakeasy';
@@ -113,7 +113,15 @@ export class tutorialController {
         try {
 
             let query = { status: { $ne: status.DELETE } }
-            var tutorialCategoryList = await findTutorialVideoList(query);
+
+            let appen =  await queryHandler.queryWithoutPagination(req.query)
+
+            let finalQuery = {
+                ...query,
+                ...appen
+            }
+           
+            var tutorialCategoryList = await findTutorialVideoList(finalQuery);
             if (!tutorialCategoryList) {
                 throw apiError.conflict(responseMessage.NOT_FOUND);
 

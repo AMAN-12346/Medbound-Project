@@ -255,3 +255,40 @@ definitions:
             file:
               type: string
     
+
+
+  subAdmin:
+    required:
+
+      - name
+      - email
+      - password
+      - permission
+    properties:
+
+      name:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      permission:
+        type: object
+        items:
+          properties:
+            medicalEducationCMS:
+              type: boolean
+            medBoundList:
+              type: boolean
+            medBoundTimes:
+              type: boolean
+            aboutUsManagement:
+              type: boolean
+            galleryManagement:
+              type: boolean
+            faqManagement:
+              type: boolean
+            helpCenterManagement:
+              type: boolean
+            bannerManagement:
+              type: boolean
