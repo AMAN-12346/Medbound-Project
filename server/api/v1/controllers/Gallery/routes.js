@@ -7,8 +7,3 @@ export default Express.Router()
   .use(upload.uploadFile)
 
   .use(auth.verifyToken)
-  .post("/addFroum", controller.addFroum)
-  .put("/editFroum", controller.editFroum)
-
-  .post("/addClub", controller.addClub)
-  .put("/editClub", controller.editClub);
