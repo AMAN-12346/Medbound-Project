@@ -196,6 +196,10 @@ module.exports = {
 	BANNER_UPDATED : "Banner Updated Successfully...",
 	BANNER_CREATED : "Banner created Successfully...",
 
+	TESTIMONIAL_NOT_FOUND: 'TESTIMONIAL not found.',
+	TESTIMONIAL_ADDED: 'TESTIMONIAL Created successfully.',
+
+
 
 
 

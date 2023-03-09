@@ -17,6 +17,7 @@ import gallery from "./api/v1/controllers/Gallery/routes";
 import alumini from "./api/v1/controllers/Alumni/routes";
 
 import Banner from "./api/v1/controllers/banner/routes";
+import Testimonial from "./api/v1/controllers/faq/routes"
 
 
 
@@ -50,6 +51,7 @@ export default function routes(app) {
   app.use("/api/v1/alumini", alumini);
 
   app.use("/api/v1/banner", Banner);
+  app.use("/api/v1/Testimonial", Testimonial);
 
   
 
