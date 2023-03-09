@@ -11,6 +11,7 @@ import jwt from 'jsonwebtoken';
 import status from '../../../../enums/status';
 import speakeasy from 'speakeasy';
 import userType from "../../../../enums/userType";
+import queryHandler from '../../../../helper/query';
 const secret = speakeasy.generateSecret({ length: 10 });
 import { blogServices } from '../../services/blogService';
 const { createBlog, findBlog, findBlogList, findandUpdateBlog } = blogServices;
@@ -106,7 +107,15 @@ export class blogController {
         try {
 
             let query = { status: { $ne: status.DELETE } }
-            var list = await findBlogList(query);
+            let appen =  await queryHandler.queryWithoutPagination(req.query)
+
+            let finalQuery = {
+                ...query,
+                ...appen
+            }
+
+
+            var list = await findBlogList(finalQuery);
             if (!list) {
                 throw apiError.conflict(responseMessage.NOT_FOUND);
 

@@ -11,184 +11,358 @@ import jwt from "jsonwebtoken";
 import status from "../../../../enums/status";
 import speakeasy from "speakeasy";
 import userType from "../../../../enums/userType";
+import queryHandler from '../../../../helper/query';
 const secret = speakeasy.generateSecret({ length: 10 });
 import { userServices } from "../../services/user";
-const {
-    userCheck,
-    paginateSearch,
-    insertManyUser,
-    createAddress,
-    checkUserExists,
-    emailMobileExist,
-    createUser,
-    findUser,
-    updateUser,
-    updateUserById,
-    checkSocialLogin,
-} = userServices;
+const { findUser } = userServices;
 import { froumServices } from "../../services/ForumAndSocial_Clubs";
-const { createForum, UpdateForum, findForum } = froumServices;
+const {
+  createForum,
+  UpdateForum,
+  findForum,
+  createClub,
+  UpdateClub,
+  findClub,
+  findList
+} = froumServices;
 
 export class froumController {
-    /**
-     * @swagger
-     * /forum/addFroum:
-     *   post:
-     *     tags:
-     *       - Forum And Social_Clubs
-     *     description: addFroum
-     *     produces:
-     *       - application/json
-     *     parameters:
-     *       - name: token
-     *         description: token
-     *         in: header
-     *         required: true
-     *       - name: name
-     *         description: name
-     *         in: formData
-     *         required: true
-     *       - name: description
-     *         description: description
-     *         in: formData
-     *         required: true
-     *       - name: activities
-     *         description: activities
-     *         in: formData
-     *         required: true
-     *       - name: format
-     *         description: format
-     *         in: formData
-     *         required: true
-     *       - name: Photo
-     *         description: Photo
-     *         in: formData
-     *         type: file
-     *         required: false
-     *     responses:
-     *       200:
-     *         description: Forum created successfully
-     *       501:
-     *         description: Something went wrong.
-     *       500:
-     *         description: Internal server error.
-     */
-    async addFroum(req, res, next) {
-        const validationSchema = {
-            name: Joi.string().required(),
-            description: Joi.string().required(),
-            activities: Joi.string().required(),
-            format: Joi.string().required(),
-        };
-        try {
-            var validatedBody = await Joi.validate(req.body, validationSchema);
-            const { name, description, activities, format } = validatedBody;
-            console.log("req.nhg", req.body);
-            let userResult = await findUser(
-                { _id: req.userId },
-                { userType: userType.ADMIN }
-            );
-            if (!userResult) {
-                throw apiError.notFound(responseMessage.USER_NOT_FOUND);
-            }
-            if (req.files) {
-                req.files.photo = await commonFunction.getImageUrlUpdated(req.files.path);
-                validatedBody.photo = req.files.path;
-                const result = await createForum(req.body);
-                return res.json(new response(responseMessage.FORUM_CREATED, result));
-            }
-            const result = await createForum(req.body);
-            return res.json(new response(responseMessage.FORUM_CREATED, result));
-        } catch (error) {
-            console.log(error);
-            return next(error);
-        }
-    }
 
-    /**
-     * @swagger
-     * /forum/editFroum:
-     *   put:
-     *     tags:
-     *       - Forum And Social_Clubs
-     *     description: editFroum
-     *     produces:
-     *       - application/json
-     *     parameters:
-     *       - name: token
-     *         description: token
-     *         in: header
-     *         required: true
-     *       - name: name
-     *         description: name
-     *         in: formData
-     *         required: true
-     *       - name: description
-     *         description: description
-     *         in: formData
-     *         required: true
-     *       - name: activities
-     *         description: activities
-     *         in: formData
-     *         required: true
-     *       - name: format
-     *         description: format
-     *         in: formData
-     *         required: true
-     *       - name: Photo
-     *         description: Photo
-     *         in: formData
-     *         type: file
-     *         required: false
-     *     responses:
-     *       200:
-     *         description: Forum created successfully
-     *       501:
-     *         description: Something went wrong.
-     *       500:
-     *         description: Internal server error.
-     */
-    async editFroum(req, res, next) {
-        const validationSchema = {
-            ForumId: Joi.string().required(),
-            name: Joi.string().required(),
-            description: Joi.string().required(),
-            activities: Joi.string().required(),
-            format: Joi.string().required(),
-        };
-        try {
-            var validatedBody = await Joi.validate(req.body, validationSchema);
-            const { name, description, activities, format } = validatedBody;
-            console.log({ validatedBody });
-            let userResult = await findUser(
-                { _id: req.userId },
-                { userType: userType.ADMIN }
-            );
-            if (!userResult) {
-                throw apiError.notFound(responseMessage.USER_NOT_FOUND);
-            }
-            const forumResult = await findForum({ _id: validatedBody.ForumId });
-            if (!forumResult) {
-                throw apiError.notFound(responseMessage.FORUM_NOT_FOUND)
-            }
-            const result = await UpdateForum(
-                { _id: forumResult._id },
-                {
-                    $set: {
-                        name: name,
-                        description: description,
-                        activities: activities,
-                        format: format,
-                    },
-                }
-            );
-            return res.json(new response(responseMessage.FORUM_UPDATED, result));
-        } catch (error) {
-            console.log(error);
-            return next(error);
-        }
-    }
 
+  /**
+   * @swagger
+   * /forum/listFroum:
+   *   get:
+   *     tags:
+   *       - Forum And Social_Clubs
+   *     description: addFroum
+   *     produces:
+   *       - application/json
+   *     responses:
+   *       200:
+   *         description: Forum created successfully
+   *       501:
+   *         description: Something went wrong.
+   *       500:
+   *         description: Internal server error.
+   */
+   async listFroum(req, res, next) {
+    try {
+      let query = {status: { $ne: 'DELETE' } }
+      let appen =  await queryHandler.queryWithoutPagination(req.query)
+
+      let finalQuery = {
+          ...query,
+          ...appen
+      }
+      let data = await findList(finalQuery)
+      if (!data) {
+          throw apiError.conflict(responseMessage.DATA_NOT_FOUND);
+      }
+      else {
+          return res.json(new response(data, responseMessage.DATA_FOUND));
+      }
+  } catch (error) {
+      console.log("error ==========> 79", error)
+      return next(error);
+  }
+  }
+
+  /**
+   * @swagger
+   * /forum/addFroum:
+   *   post:
+   *     tags:
+   *       - Forum And Social_Clubs
+   *     description: addFroum
+   *     produces:
+   *       - application/json
+   *     parameters:
+   *       - name: token
+   *         description: token
+   *         in: header
+   *         required: true
+   *       - name: name
+   *         description: name
+   *         in: formData
+   *         required: true
+   *       - name: description
+   *         description: description
+   *         in: formData
+   *         required: true
+   *       - name: activities
+   *         description: activities
+   *         in: formData
+   *         required: true
+   *       - name: format
+   *         description: format
+   *         in: formData
+   *         required: true
+   *       - name: Photo
+   *         description: Photo
+   *         in: formData
+   *         type: file
+   *         required: false
+   *     responses:
+   *       200:
+   *         description: Forum created successfully
+   *       501:
+   *         description: Something went wrong.
+   *       500:
+   *         description: Internal server error.
+   */
+  async addFroum(req, res, next) {
+    try {
+      var validatedBody = await Joi.validate(req.body);
+      const { name, description, activities, format } = validatedBody;
+      let userResult = await findUser(
+        { _id: req.userId },
+        { userType: userType.ADMIN }
+      );
+      if (!userResult) {
+        throw apiError.notFound(responseMessage.USER_NOT_FOUND);
+      }
+      if (req.files) {
+        req.body.photo = await commonFunction.getImageUrlUpdated(req.files[0].path);
+        validatedBody.photo = req.files[0].path;
+        const result = await createForum(req.body);
+        return res.json(new response(responseMessage.FORUM_CREATED, result));
+      }
+      const result = await createForum(req.body);
+      return res.json(new response(responseMessage.FORUM_CREATED, result));
+    } catch (error) {
+      console.log(error);
+      return next(error);
+    }
+  }
+
+  /**
+   * @swagger
+   * /forum/editFroum:
+   *   put:
+   *     tags:
+   *       - Forum And Social_Clubs
+   *     description: editFroum
+   *     produces:
+   *       - application/json
+   *     parameters:
+   *       - name: token
+   *         description: token
+   *         in: header
+   *         required: true
+   *       - name: ForumId
+   *         description: _id
+   *         in: formData
+   *         required: true
+   *       - name: name
+   *         description: name
+   *         in: formData
+   *         required: true
+   *       - name: description
+   *         description: description
+   *         in: formData
+   *         required: true
+   *       - name: activities
+   *         description: activities
+   *         in: formData
+   *         required: true
+   *       - name: format
+   *         description: format
+   *         in: formData
+   *         required: true
+   *       - name: Photo
+   *         description: Photo
+   *         in: formData
+   *         type: file
+   *         required: false
+   *     responses:
+   *       200:
+   *         description: Forum created successfully
+   *       501:
+   *         description: Something went wrong.
+   *       500:
+   *         description: Internal server error.
+   */
+  async editFroum(req, res, next) {
+    try {
+      var validatedBody = await Joi.validate(req.body);
+      const { name, description, activities, format, ForumId } = validatedBody;
+      console.log({ validatedBody });
+      let userResult = await findUser(
+        { _id: req.userId },
+        { userType: userType.ADMIN }
+      );
+      if (!userResult) {
+        throw apiError.notFound(responseMessage.USER_NOT_FOUND);
+      }
+      const forumResult = await findForum({ _id: validatedBody.ForumId });
+      if (!forumResult) {
+        throw apiError.notFound(responseMessage.FORUM_NOT_FOUND);
+      }
+      const result = await UpdateForum(
+        { _id: forumResult._id },
+        {
+          $set: {
+            name: name,
+            description: description,
+            activities: activities,
+            format: format,
+          },
+        }
+      );
+      return res.json(new response(responseMessage.FORUM_UPDATED, result));
+    } catch (error) {
+      console.log(error);
+      return next(error);
+    }
+  }
+
+  /**
+   * @swagger
+   * /club/addClub:
+   *   post:
+   *     tags:
+   *       - Forum And Social_Clubs
+   *     description: addClub
+   *     produces:
+   *       - application/json
+   *     parameters:
+   *       - name: token
+   *         description: token
+   *         in: header
+   *         required: true
+   *       - name: name
+   *         description: name
+   *         in: formData
+   *         required: true
+   *       - name: description
+   *         description: description
+   *         in: formData
+   *         required: true
+   *       - name: activities
+   *         description: activities
+   *         in: formData
+   *         required: true
+   *       - name: format
+   *         description: format
+   *         in: formData
+   *         required: true
+   *       - name: Photo
+   *         description: Photo
+   *         in: formData
+   *         type: file
+   *         required: false
+   *     responses:
+   *       200:
+   *         description: Forum created successfully
+   *       501:
+   *         description: Something went wrong.
+   *       500:
+   *         description: Internal server error.
+   */
+  async addClub(req, res, next) {
+    try {
+      var validatedBody = await Joi.validate(req.body);
+      const { name, description, activities, format } = validatedBody;
+      console.log("req.nhg", req.body, req.files);
+      let userResult = await findUser(
+        { _id: req.userId },
+        { userType: userType.ADMIN }
+      );
+      if (!userResult) {
+        throw apiError.notFound(responseMessage.USER_NOT_FOUND);
+      }
+      if (req.files) {
+        req.body.photo = await commonFunction.getImageUrlUpdated(
+          req.files[0].path
+        );
+        validatedBody.photo = req.files[0].path;
+        const result = await createClub(req.body);
+        return res.json(new response(responseMessage.CLUB_CREATED, result));
+      }
+      const result = await createClub(req.body);
+      return res.json(new response(responseMessage.CLUB_CREATED, result));
+    } catch (error) {
+      console.log(error);
+      return next(error);
+    }
+  }
+
+  /**
+   * @swagger
+   * /club/editClub:
+   *   put:
+   *     tags:
+   *       - Forum And Social_Clubs
+   *     description: editClub
+   *     produces:
+   *       - application/json
+   *     parameters:
+   *       - name: token
+   *         description: token
+   *         in: header
+   *         required: true
+   *       - name: clubId
+   *         description: _id
+   *         in: formData
+   *         required: true
+   *       - name: name
+   *         description: name
+   *         in: formData
+   *         required: true
+   *       - name: description
+   *         description: description
+   *         in: formData
+   *         required: true
+   *       - name: activities
+   *         description: activities
+   *         in: formData
+   *         required: true
+   *       - name: format
+   *         description: format
+   *         in: formData
+   *         required: true
+   *     responses:
+   *       200:
+   *         description: Forum created successfully
+   *       501:
+   *         description: Something went wrong.
+   *       500:
+   *         description: Internal server error.
+   */
+  async editClub(req, res, next) {
+    try {
+      var validatedBody = await Joi.validate(req.body);
+      const { name, description, activities, format, clubId } = validatedBody;
+      console.log({ validatedBody });
+      let userResult = await findUser(
+        { _id: req.userId },
+        { userType: userType.ADMIN }
+      );
+      if (!userResult) {
+        throw apiError.notFound(responseMessage.USER_NOT_FOUND);
+      }
+      const forumResult = await findClub({ _id: validatedBody.clubId });
+      if (!forumResult) {
+        throw apiError.notFound(responseMessage.CLUB_NOT_FOUND);
+      }
+      const result = await UpdateClub(
+        { _id: forumResult._id },
+        {
+          $set: {
+            name: name,
+            description: description,
+            activities: activities,
+            format: format,
+          },
+        }
+      );
+      return res.json(new response(responseMessage.CLUB_UPDATED, result));
+    } catch (error) {
+      console.log(error);
+      return next(error);
+    }
+  }
 }
 
 export default new froumController();

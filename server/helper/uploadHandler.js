@@ -33,7 +33,8 @@ export class UploadHandler {
                 if (err.code === 'LIMIT_FILE_SIZE') {
                     return next(badRequest(err, 'File size limit exceeds'));
                 }
-                return next(badRequest(err, 'Error in file upload'));
+                // return next(badRequest(err, 'Error in file upload'));
+                console.log('Error in file upload',err)
             }
             return next();
         });
@@ -46,10 +47,11 @@ export class UploadHandler {
      * @param  {} next
      */
     uploadFile(req, res, next) {
-        
         const upload = multer({
             storage: this.storage,
             fileFilter: function (req, file, cb) {
+                console.log("=============>",req.files,file)
+
                 var ext = path.extname(file.originalname).toLowerCase();
                 console.log("sssssssss",ext)
                 // if (ext !== '.png' && ext !== '.jpg' && ext !== '.jpeg' && ext !== '.svg') {

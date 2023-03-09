@@ -153,7 +153,6 @@ definitions:
       _id:
         type: string
 
-
   addFlashcard:
     required:
       - categoryId
@@ -183,8 +182,6 @@ definitions:
               type: string
             Description:
               type: string
-
-
 
   editFlashcard:
     required:
@@ -219,13 +216,8 @@ definitions:
             Description:
               type: string
 
-
-
-
-
   updateAbout:
     required:
-
       - description
       - benefits
       - collarators
@@ -234,7 +226,6 @@ definitions:
       - organisation_Link
       - updatedAt
     properties:
-
       description:
         type: string
       benefits:
@@ -254,4 +245,72 @@ definitions:
           properties:
             file:
               type: string
+
     
+
+
+  subAdmin:
+    required:
+
+      - name
+      - email
+      - password
+      - permission
+    properties:
+
+      name:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      permission:
+        type: object
+        items:
+          properties:
+            medicalEducationCMS:
+              type: boolean
+            medBoundList:
+              type: boolean
+            medBoundTimes:
+              type: boolean
+            aboutUsManagement:
+              type: boolean
+            galleryManagement:
+              type: boolean
+            faqManagement:
+              type: boolean
+            helpCenterManagement:
+              type: boolean
+            bannerManagement:
+              type: boolean
+
+  addTestimonial:
+    required:
+      - Testimonial_no
+      - title
+      - description
+    properties:
+      Testimonial_no:
+        type: string
+      title:
+        type: string
+      description:
+        type: string
+
+  editTestimonial:
+    required:
+      - _id
+      - Testimonial_no
+      - title
+      - description
+    properties:
+      _id:
+        type: string
+      Testimonial_no:
+        type: string
+      title:
+        type: strings
+      description:
+        type: strings
+
