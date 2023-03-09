@@ -15,7 +15,7 @@ const secret = speakeasy.generateSecret({ length: 10 });
 import { flashCardsServices } from '../../services/flashCards';
 const { createFlashCardCategory, findFlashCardCategory, findFlashCardCategoryList, findandUpdateFlashCardCategory, createFlashCardSubCategory,
     findFlashCardSubCategory, findFlashCardSubCategoryList, findandUpdateFlashCardSubCategory
-    , createFlashCard, findFlashCard, findFlashCardList, findandUpdateCategory
+    , createFlashCard, findFlashCard, findFlashCardList, findandUpdateFlashCard
 } = flashCardsServices;
 
 
@@ -331,37 +331,37 @@ export class flashCard {
 
 
 
-     /**
-     * @swagger
-     * /flashCard/addFlashcardSubCategory:
-     *   post:
-     *     tags:
-     *       - FlashCards
-     *     description: flashCards
-     *     produces:
-     *       - application/json
-     *     parameters:
-     *       - name: subCategoryName
-     *         description: subCategoryName
-     *         in: formData
-     *         required: true
-     *       - name: categoryId
-     *         description: categoryId
-     *         in: query
-     *         required: true
-     *     responses:
-     *       200:
-     *         description: User created successfully
-     *       409:
-     *         description: This email already exists ./ This mobile number already exists.
-     *       400:
-     *         description:  Password and confirm password does not match
-     *       501:
-     *         description: Something went wrong.
-     *       500:
-     *         description: Internal server error.
-     */
-      async addFlashcardSubCategory(req, res, next) {
+    /**
+    * @swagger
+    * /flashCard/addFlashcardSubCategory:
+    *   post:
+    *     tags:
+    *       - FlashCards
+    *     description: flashCards
+    *     produces:
+    *       - application/json
+    *     parameters:
+    *       - name: subCategoryName
+    *         description: subCategoryName
+    *         in: formData
+    *         required: true
+    *       - name: categoryId
+    *         description: categoryId
+    *         in: query
+    *         required: true
+    *     responses:
+    *       200:
+    *         description: User created successfully
+    *       409:
+    *         description: This email already exists ./ This mobile number already exists.
+    *       400:
+    *         description:  Password and confirm password does not match
+    *       501:
+    *         description: Something went wrong.
+    *       500:
+    *         description: Internal server error.
+    */
+    async addFlashcardSubCategory(req, res, next) {
         const validationSchema = {
             subCategoryName: Joi.string().required()
         };
@@ -371,7 +371,7 @@ export class flashCard {
         try {
             const validatedBody = await Joi.validate(req.body, validationSchema);
             const validatedQueryBody = await Joi.validate(req.query, queryValidationSchema);
-            let query = { subCategoryName: req.body.subCategoryName, categoryId : req.query.categoryId,  status: { $ne: 'DELETE' } }
+            let query = { subCategoryName: req.body.subCategoryName, categoryId: req.query.categoryId, status: { $ne: 'DELETE' } }
             var category = await findFlashCardSubCategory(query);
             console.log(category)
             if (category) {
@@ -414,7 +414,7 @@ export class flashCard {
      *       500:
      *         description: Internal server error.
      */
-     async flashcardSubCategoryList(req, res, next) {
+    async flashcardSubCategoryList(req, res, next) {
 
         try {
 
@@ -437,56 +437,56 @@ export class flashCard {
 
 
 
-        /**
-     * @swagger
-     * /flashCard/flashcardSubCategoryView:
-     *   get:
-    *     tags:
-     *       - FlashCards
-     *     description: flashCards
-     *     produces:
-     *       - application/json
-     *     parameters:
-     *       - name: _id
-     *         description: subcategoryId
-     *         in: query
-     *         required: true 
-     *     responses:
-     *       200:
-     *         description: User created successfully
-     *       409:
-     *         description: This email already exists ./ This mobile number already exists.
-     *       400:
-     *         description:  Password and confirm password does not match
-     *       501:
-     *         description: Something went wrong.
-     *       500:
-     *         description: Internal server error.
-     */
-         async flashcardSubCategoryView(req, res, next) {
-            const validationSchema = {
-                _id: Joi.string().required()
-            };
-            try {
-                const validatedQuery = await Joi.validate(req.query, validationSchema);
-                let query = { _id: req.query._id, status: { $ne: 'DELETE' } }
-                var category = await findFlashCardSubCategory(query);
-                if (!category) {
-                    throw apiError.conflict(responseMessage.NOT_FOUND);
-    
-                }
-                else {
-    
-                    return res.json(new response(category, responseMessage.DATA_FOUND));
-    
-                }
-            } catch (error) {
-                console.log("error ==========> 79", error)
-                return next(error);
-            }
-        }
+    /**
+ * @swagger
+ * /flashCard/flashcardSubCategoryView:
+ *   get:
+*     tags:
+ *       - FlashCards
+ *     description: flashCards
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: _id
+ *         description: subcategoryId
+ *         in: query
+ *         required: true 
+ *     responses:
+ *       200:
+ *         description: User created successfully
+ *       409:
+ *         description: This email already exists ./ This mobile number already exists.
+ *       400:
+ *         description:  Password and confirm password does not match
+ *       501:
+ *         description: Something went wrong.
+ *       500:
+ *         description: Internal server error.
+ */
+    async flashcardSubCategoryView(req, res, next) {
+        const validationSchema = {
+            _id: Joi.string().required()
+        };
+        try {
+            const validatedQuery = await Joi.validate(req.query, validationSchema);
+            let query = { _id: req.query._id, status: { $ne: 'DELETE' } }
+            var category = await findFlashCardSubCategory(query);
+            if (!category) {
+                throw apiError.conflict(responseMessage.NOT_FOUND);
 
-  
+            }
+            else {
+
+                return res.json(new response(category, responseMessage.DATA_FOUND));
+
+            }
+        } catch (error) {
+            console.log("error ==========> 79", error)
+            return next(error);
+        }
+    }
+
+
 
     /**
  * @swagger
@@ -574,29 +574,29 @@ export class flashCard {
 *       500:
 *         description: Internal server error.
 */
-async flashcardSubCategoryDelete(req, res, next) {
-    const validationSchema = {
-        _id: Joi.string().required()
-    };
+    async flashcardSubCategoryDelete(req, res, next) {
+        const validationSchema = {
+            _id: Joi.string().required()
+        };
 
-    try {
-        const validatedQuery = await Joi.validate(req.query, validationSchema);
-        let query = { _id: req.query._id, status: { $ne: 'DELETE' } }
-        var category = await findFlashCardSubCategory(query);
-        if (!category) {
-            throw apiError.conflict(responseMessage.NOT_FOUND);
+        try {
+            const validatedQuery = await Joi.validate(req.query, validationSchema);
+            let query = { _id: req.query._id, status: { $ne: 'DELETE' } }
+            var category = await findFlashCardSubCategory(query);
+            if (!category) {
+                throw apiError.conflict(responseMessage.NOT_FOUND);
 
+            }
+            else {
+                let result = await findandUpdateFlashCardSubCategory({ _id: req.query._id }, { status: status.DELETE })
+                return res.json(new response(result, responseMessage.DELETE_SUCCESS));
+
+            }
+        } catch (error) {
+            console.log("error ==========> 79", error)
+            return next(error);
         }
-        else {
-            let result = await findandUpdateFlashCardSubCategory({ _id: req.query._id }, { status: status.DELETE })
-            return res.json(new response(result, responseMessage.DELETE_SUCCESS));
-
-        }
-    } catch (error) {
-        console.log("error ==========> 79", error)
-        return next(error);
     }
-}
 
 
     /**
@@ -624,35 +624,360 @@ async flashcardSubCategoryDelete(req, res, next) {
 *       500:
 *         description: Internal server error.
 */
-async flashcardSubCategoryBlockUnblock(req, res, next) {
-    const validationSchema = {
-        _id: Joi.string().required()
-    };
+    async flashcardSubCategoryBlockUnblock(req, res, next) {
+        const validationSchema = {
+            _id: Joi.string().required()
+        };
 
-    try {
-        const validatedQuery = await Joi.validate(req.query, validationSchema);
-        let query = { _id: req.query._id, status: { $ne: 'DELETE' } }
-        var category = await findFlashCardSubCategory(query);
-        if (!category) {
-            throw apiError.conflict(responseMessage.NOT_FOUND);
+        try {
+            const validatedQuery = await Joi.validate(req.query, validationSchema);
+            let query = { _id: req.query._id, status: { $ne: 'DELETE' } }
+            var category = await findFlashCardSubCategory(query);
+            if (!category) {
+                throw apiError.conflict(responseMessage.NOT_FOUND);
 
+            }
+            else {
+                console.log(category.status)
+                let statusChanged = category.status == 'ACTIVE' ? status.BLOCK : status.ACTIVE
+
+                let result = await findandUpdateFlashCardSubCategory({ _id: req.query._id }, { status: statusChanged })
+                return res.json(new response(result, `Category ${statusChanged} succesfully`));
+
+            }
+        } catch (error) {
+            console.log("error ==========> 79", error)
+            return next(error);
         }
-        else {
-            console.log(category.status)
-            let statusChanged = category.status == 'ACTIVE' ? status.BLOCK : status.ACTIVE
-
-            let result = await findandUpdateFlashCardSubCategory({ _id: req.query._id }, { status: statusChanged })
-            return res.json(new response(result, `Category ${statusChanged} succesfully`));
-
-        }
-    } catch (error) {
-        console.log("error ==========> 79", error)
-        return next(error);
     }
-}
+
+
+    /**
+    * @swagger
+    * /flashCard/addFlashcard:
+    *   post:
+    *     tags:
+    *       - FlashCards
+    *     description: flashCards
+    *     produces:
+    *       - application/json
+    *     parameters:
+    *       - name: addFlashcard
+    *         description: addFlashcard
+    *         in: body
+    *         required: true
+    *         schema:
+    *           $ref: '#/definitions/addFlashcard'
+    *     responses:
+    *       200:
+    *         description: User created successfully
+    *       409:
+    *         description: This email already exists ./ This mobile number already exists.
+    *       400:
+    *         description:  Password and confirm password does not match
+    *       501:
+    *         description: Something went wrong.
+    *       500:
+    *         description: Internal server error.
+    */
+    async addFlashcard(req, res, next) {
+        const validationSchema = {
+            categoryId: Joi.string().required(),
+            subCategoryId: Joi.string().required(),
+            title: Joi.string().required(),
+            authorName: Joi.string().required(),
+            subject: Joi.string().required(),
+            flashCard: Joi.array().optional()
+
+        };
+
+        try {
+            const validatedBody = await Joi.validate(req.body);
+            var category = await findFlashCardCategory({ _id: req.body.categoryId, status: { $ne: 'DELETE' } });
+            var subCategory = await findFlashCardSubCategory({ _id: req.body.subCategoryId, status: { $ne: 'DELETE' } });
+            var flashcard = await findFlashCard({ title: req.body.title, categoryId: req.body.categoryId, subCategoryId: req.body.subCategoryId, status: { $ne: 'DELETE' } });
+            if (!category) {
+                throw apiError.conflict(`Category ${responseMessage.NOT_FOUND}`);
+            }
+            else if (!subCategory) {
+                throw apiError.conflict(`Sub-Category ${responseMessage.NOT_FOUND}`);
+            }
+            else if (flashcard) {
+                throw apiError.conflict(responseMessage.ALREADY_EXITS);
+            }
+            else {
+                var result = await createFlashCard(validatedBody)
+                return res.json(new response(result, responseMessage.ADD_SUCCESS));
+
+            }
+        } catch (error) {
+            console.log("error ==========> 79", error)
+            return next(error);
+        }
+    }
+
+
+    /**
+     * @swagger
+     * /flashCard/viewFlashcard:
+     *   get:
+     *     tags:
+     *       - FlashCards
+     *     description: flashCards
+     *     produces:
+     *       - application/json
+     *     parameters:
+     *       - name: _id
+     *         description: _id
+     *         in: query
+     *         required: true 
+     *     responses:
+     *       200:
+     *         description: User created successfully
+     *       409:
+     *         description: This email already exists ./ This mobile number already exists.
+     *       400:
+     *         description:  Password and confirm password does not match
+     *       501:
+     *         description: Something went wrong.
+     *       500:
+     *         description: Internal server error.
+     */
+    async viewFlashcard(req, res, next) {
+        const validationSchema = {
+            _id: Joi.string().required(),
+
+        };
+
+        try {
+            const validatedBody = await Joi.validate(req.query, validationSchema);
+            var flashcard = await findFlashCard({ _id: req.query._id, status: { $ne: 'DELETE' } });
+            if (!flashcard) {
+                throw apiError.conflict(`Flashcard ${responseMessage.NOT_FOUND}`);
+            }
+
+            else {
+                return res.json(new response(flashcard, responseMessage.ADD_SUCCESS));
+
+            }
+        } catch (error) {
+            console.log("error ==========> 79", error)
+            return next(error);
+        }
+    }
 
 
 
+    /**
+   * @swagger
+   * /flashCard/editFlashcard:
+   *   post:
+   *     tags:
+   *       - FlashCards
+   *     description: flashCards
+   *     produces:
+   *       - application/json
+   *     parameters:
+   *       - name: editFlashcard
+   *         description: editFlashcard
+   *         in: body
+   *         required: true
+   *         schema:
+   *           $ref: '#/definitions/editFlashcard'
+   *     responses:
+   *       200:
+   *         description: User created successfully
+   *       409:
+   *         description: This email already exists ./ This mobile number already exists.
+   *       400:
+   *         description:  Password and confirm password does not match
+   *       501:
+   *         description: Something went wrong.
+   *       500:
+   *         description: Internal server error.
+   */
+    async editFlashcard(req, res, next) {
+        const validationSchema = {
+            _id: Joi.string().required(),
+            categoryId: Joi.string().required(),
+            subCategoryId: Joi.string().required(),
+            title: Joi.string().required(),
+            authorName: Joi.string().required(),
+            subject: Joi.string().required(),
+            flashCard: Joi.array().optional()
+
+        };
+
+        try {
+            const validatedBody = await Joi.validate(req.body);
+            var category = await findFlashCardCategory({ _id: req.body.categoryId, status: { $ne: 'DELETE' } });
+            var subCategory = await findFlashCardSubCategory({ _id: req.body.subCategoryId, status: { $ne: 'DELETE' } });
+            var flashcard = await findFlashCard({ title: req.body.title, categoryId: req.body.categoryId, subCategoryId: req.body.subCategoryId, status: { $ne: 'DELETE' } });
+            if (!category) {
+                throw apiError.conflict(`Category ${responseMessage.NOT_FOUND}`);
+            }
+            else if (!subCategory) {
+                throw apiError.conflict(`Sub-Category ${responseMessage.NOT_FOUND}`);
+            }
+            else if (flashcard) {
+                throw apiError.conflict(responseMessage.ALREADY_EXITS);
+            }
+            else {
+                var result = await findandUpdateFlashCard({ _id: req.body._id }, validatedBody)
+                return res.json(new response(result, responseMessage.ADD_SUCCESS));
+
+            }
+        } catch (error) {
+            console.log("error ==========> 79", error)
+            return next(error);
+        }
+    }
+
+
+
+    /**
+   * @swagger
+   * /flashCard/deleteFlashcard:
+   *   delete:
+   *     tags:
+   *       - FlashCards
+   *     description: flashCards
+   *     produces:
+   *       - application/json
+   *     parameters:
+   *       - name: _id
+   *         description: _id
+   *         in: query
+   *         required: true
+   *     responses:
+   *       200:
+   *         description: User created successfully
+   *       409:
+   *         description: This email already exists ./ This mobile number already exists.
+   *       400:
+   *         description:  Password and confirm password does not match
+   *       501:
+   *         description: Something went wrong.
+   *       500:
+   *         description: Internal server error.
+   */
+    async deleteFlashcard(req, res, next) {
+        const validationSchema = {
+            _id: Joi.string().required(),
+        };
+
+        try {
+            const validatedBody = await Joi.validate(req.query, validationSchema);
+            var flashcard = await findFlashCard({ _id: req.query._id, status: { $ne: 'DELETE' } });
+            if (!flashcard) {
+                throw apiError.conflict(`Flashcard ${responseMessage.NOT_FOUND}`);
+            }
+            else {
+                var result = await findandUpdateFlashCard({ _id: req.query._id }, { status: status.DELETE })
+                return res.json(new response(result, responseMessage.DELETE_SUCCESS));
+
+            }
+        } catch (error) {
+            console.log("error ==========> 79", error)
+            return next(error);
+        }
+    }
+
+
+
+    /**
+ * @swagger
+ * /flashCard/blockUnblockFlashcard:
+ *   put:
+ *     tags:
+ *       - FlashCards
+ *     description: flashCards
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: _id
+ *         description: _id
+ *         in: query
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: User created successfully
+ *       409:
+ *         description: This email already exists ./ This mobile number already exists.
+ *       400:
+ *         description:  Password and confirm password does not match
+ *       501:
+ *         description: Something went wrong.
+ *       500:
+ *         description: Internal server error.
+ */
+    async blockUnblockFlashcard(req, res, next) {
+        const validationSchema = {
+            _id: Joi.string().required(),
+        };
+
+        try {
+            console.log("error ==========> 79", req.query)
+            const validatedBody = await Joi.validate(req.query, validationSchema);
+            var flashcard = await findFlashCard({ _id: req.query._id, status: { $ne: 'DELETE' } });
+            if (!flashcard) {
+                throw apiError.conflict(`Flashcard ${responseMessage.NOT_FOUND}`);
+            }
+            else {
+
+                let statusChanged = flashcard.status == 'ACTIVE' ? status.BLOCK : status.ACTIVE
+                var result = await findandUpdateFlashCard({ _id: req.query._id }, { status: statusChanged })
+                return res.json(new response(result, `Flashcard ${statusChanged} Successfully`));
+
+            }
+        } catch (error) {
+            console.log("error ==========> 79", error)
+            return next(error);
+        }
+    }
+
+
+
+
+    /**
+ * @swagger
+ * /flashCard/listFlashcard:
+ *   get:
+ *     tags:
+ *       - FlashCards
+ *     description: flashCards
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: User created successfully
+ *       409:
+ *         description: This email already exists ./ This mobile number already exists.
+ *       400:
+ *         description:  Password and confirm password does not match
+ *       501:
+ *         description: Something went wrong.
+ *       500:
+ *         description: Internal server error.
+ */
+     async listFlashcard(req, res, next) {
+       
+
+        try {
+            
+            var flashcard = await findFlashCardList({status : {$ne : status.DELETE}});
+            if (!flashcard) {
+                throw apiError.conflict(`Flashcard ${responseMessage.NOT_FOUND}`);
+            }
+            else {
+                return res.json(new response(flashcard, responseMessage.DATA_FOUND));
+
+            }
+        } catch (error) {
+            console.log("error ==========> 79", error)
+            return next(error);
+        }
+    }
 }
 
 export default new flashCard()

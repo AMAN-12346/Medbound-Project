@@ -7,8 +7,16 @@ import tutorialVideo from "./api/v1/controllers/tutorialVideoByCatgory/routes";
 import flashCards from "./api/v1/controllers/flashCards/routes";
 
 import forum from "./api/v1/controllers/ForumAndSocial_Clubs/routes";
+import club from "./api/v1/controllers/ForumAndSocial_Clubs/routes";
 import statics from "./api/v1/controllers/faq/routes";
 import faq from "./api/v1/controllers/faq/routes";
+import blog from "./api/v1/controllers/Blog/routes";
+import medBound from "./api/v1/controllers/MedBoundCMS/routes";
+import medBoundTimes from "./api/v1/controllers/MedBoundTimes/routes";
+import gallery from "./api/v1/controllers/Gallery/routes";
+import alumini from "./api/v1/controllers/Alumni/routes";
+
+import Banner from "./api/v1/controllers/banner/routes";
 
 
 
@@ -34,6 +42,14 @@ export default function routes(app) {
   app.use('/api/v1/forum', forum);
   app.use("/api/v1/static", statics);
   app.use("/api/v1/faq", faq);
+  app.use("/api/v1/blog", blog);
+  app.use("/api/v1/medBoundCms", medBound);
+  app.use("/api/v1/medBoundTimes", medBoundTimes);
+
+  app.use("/api/v1/gallery", gallery);
+  app.use("/api/v1/alumini", alumini);
+
+  app.use("/api/v1/banner", Banner);
 
   
 

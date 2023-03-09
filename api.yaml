@@ -152,3 +152,106 @@ definitions:
     properties:
       _id:
         type: string
+
+
+  addFlashcard:
+    required:
+      - categoryId
+      - subCategoryId
+      - title
+      - authorName
+      - subject
+    properties:
+      categoryId:
+        type: string
+      subCategoryId:
+        type: string
+      title:
+        type: string
+      authorName:
+        type: string
+      subject:
+        type: string
+      flashCards:
+        type: array
+        items:
+          type: object
+          properties:
+            question:
+              type: string
+            image:
+              type: string
+            Description:
+              type: string
+
+
+
+  editFlashcard:
+    required:
+      - _id
+      - categoryId
+      - subCategoryId
+      - title
+      - authorName
+      - subject
+    properties:
+      _id:
+        type: string
+      categoryId:
+        type: string
+      subCategoryId:
+        type: string
+      title:
+        type: string
+      authorName:
+        type: string
+      subject:
+        type: string
+      flashCards:
+        type: array
+        items:
+          type: object
+          properties:
+            question:
+              type: string
+            image:
+              type: string
+            Description:
+              type: string
+
+
+
+
+
+  updateAbout:
+    required:
+
+      - description
+      - benefits
+      - collarators
+      - features
+      - certificate_Link
+      - organisation_Link
+      - updatedAt
+    properties:
+
+      description:
+        type: string
+      benefits:
+        type: string
+      features:
+        type: string
+      certificate_Link:
+        type: string
+      organisation_Link:
+        type: string
+      updatedAt:
+        type: date
+      collarators:
+        type: array
+        items:
+          type: object
+          properties:
+            file:
+              type: string
+    
