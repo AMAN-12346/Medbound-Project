@@ -4,6 +4,7 @@ import auth from "../../../../helper/auth";
 import upload from "../../../../helper/uploadHandler";
 
 export default Express.Router()
+  .get("/listGallery", controller.listGallery)
   .post("/viewGallery", controller.viewGallery)
 
   .use(upload.uploadFile)

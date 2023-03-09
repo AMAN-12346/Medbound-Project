@@ -11,6 +11,7 @@ import jwt from 'jsonwebtoken';
 import status from '../../../../enums/status';
 import speakeasy from 'speakeasy';
 import userType from "../../../../enums/userType";
+import queryHandler from '../../../../helper/query';
 const secret = speakeasy.generateSecret({ length: 10 });
 import { tutorialServices } from '../../services/tutorialVideo';
 const { createTutorialCategory, findTutorialCategory, findTutorialCategoryList, findandUpdateCategory } = tutorialServices;
@@ -97,8 +98,14 @@ export class tutorialController {
         try {
 
             let query = { status: { $ne: status.DELETE } }
-            var tutorialCategoryList = await findTutorialCategoryList(query);
-            if (!tutorialCategoryList) {
+            let appen =  await queryHandler.queryWithoutPagination(req.query)
+
+            let finalQuery = {
+                ...query,
+                ...appen
+            }
+            var tutorialCategoryList = await findTutorialCategoryList(finalQuery);
+            if (!tutorialCategoryList || !tutorialCategoryList.length) {
                 throw apiError.conflict(responseMessage.NOT_FOUND);
 
             }
