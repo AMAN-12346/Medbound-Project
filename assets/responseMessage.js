@@ -200,6 +200,8 @@ module.exports = {
 	TESTIMONIAL_ADDED: 'TESTIMONIAL Created successfully.',
 
 
+	STORY_NOT_FOUND : "Story not found..",
+
 
 
 

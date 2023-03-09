@@ -9,4 +9,4 @@ export default Express.Router()
   .use(auth.verifyToken)
   .use(upload.uploadFile)
   .post("/addBanner", controller.addBanner)
-  .put("/editBanner", controller.editBanner);
+  .put("/editBanner", controller.editBanner)

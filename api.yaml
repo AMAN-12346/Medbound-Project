@@ -274,3 +274,33 @@ definitions:
         type: strings
       description:
         type: strings
+
+
+  addStory:
+    required:
+      - Story_no
+      - title
+      - description
+    properties:
+      Story_no:
+        type: string
+      title:
+        type: strings
+      description:
+        type: strings
+
+  editStory:
+    required:
+      - StoryID
+      - Story_no
+      - title
+      - description
+    properties:
+      StoryID:
+        type: string
+      Story_no:
+        type: string
+      title:
+        type: strings
+      description:
+        type: strings
