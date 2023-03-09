@@ -153,7 +153,6 @@ definitions:
       _id:
         type: string
 
-
   addFlashcard:
     required:
       - categoryId
@@ -183,8 +182,6 @@ definitions:
               type: string
             Description:
               type: string
-
-
 
   editFlashcard:
     required:
@@ -219,13 +216,8 @@ definitions:
             Description:
               type: string
 
-
-
-
-
   updateAbout:
     required:
-
       - description
       - benefits
       - collarators
@@ -234,7 +226,6 @@ definitions:
       - organisation_Link
       - updatedAt
     properties:
-
       description:
         type: string
       benefits:
@@ -254,6 +245,7 @@ definitions:
           properties:
             file:
               type: string
+
     
 
 
@@ -292,3 +284,33 @@ definitions:
               type: boolean
             bannerManagement:
               type: boolean
+
+  addTestimonial:
+    required:
+      - Testimonial_no
+      - title
+      - description
+    properties:
+      Testimonial_no:
+        type: string
+      title:
+        type: string
+      description:
+        type: string
+
+  editTestimonial:
+    required:
+      - _id
+      - Testimonial_no
+      - title
+      - description
+    properties:
+      _id:
+        type: string
+      Testimonial_no:
+        type: string
+      title:
+        type: strings
+      description:
+        type: strings
+

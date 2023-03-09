@@ -14,79 +14,52 @@ import userType from "../../../../enums/userType";
 const secret = speakeasy.generateSecret({ length: 10 });
 import { userServices } from "../../services/user";
 const { findUser } = userServices;
-import { froumServices } from "../../services/ForumAndSocial_Clubs";
-const {
-  createForum,
-  UpdateForum,
-  findForum,
-  createClub,
-  UpdateClub,
-  findClub,
-} = froumServices;
+import { GalleryServices } from "../../services/GellaryServices";
+const { createGellary, findGallery, UpdateGallery } = GalleryServices;
 
-export class froumController {
+export class GalleryController {
   /**
    * @swagger
-   * /forum/addFroum:
+   * /gallery/addGallery:
    *   post:
    *     tags:
-   *       - Forum And Social_Clubs
-   *     description: addFroum
+   *       - GALLERY
+   *     description: addGallery
    *     produces:
    *       - application/json
    *     parameters:
-   *       - name: token
-   *         description: token
-   *         in: header
-   *         required: true
-   *       - name: name
-   *         description: name
+   *       - name: Name
+   *         description: Name
    *         in: formData
    *         required: true
-   *       - name: description
-   *         description: description
-   *         in: formData
-   *         required: true
-   *       - name: activities
-   *         description: activities
-   *         in: formData
-   *         required: true
-   *       - name: format
-   *         description: format
-   *         in: formData
-   *         required: true
-   *       - name: Photo
-   *         description: Photo
+   *       - name: image
+   *         description: get Multiple Image Url
    *         in: formData
    *         type: file
    *         required: false
    *     responses:
    *       200:
-   *         description: Forum created successfully
-   *       501:
-   *         description: Something went wrong.
-   *       500:
-   *         description: Internal server error.
+   *         description: Returns success message
    */
-  async addFroum(req, res, next) {
+  async addGallery(req, res, next) {
     try {
       var validatedBody = await Joi.validate(req.body);
-      const { name, description, activities, format } = validatedBody;
-      let userResult = await findUser(
-        { _id: req.userId },
-        { userType: userType.ADMIN }
-      );
-      if (!userResult) {
-        throw apiError.notFound(responseMessage.USER_NOT_FOUND);
-      }
+      const { Name } = validatedBody;
+      console.log(validatedBody);
       if (req.files) {
-        req.body.photo = await commonFunction.getImageUrlUpdated(req.files[0].path);
-        validatedBody.photo = req.files[0].path;
-        const result = await createForum(req.body);
-        return res.json(new response(responseMessage.FORUM_CREATED, result));
+        var finalresult = [];
+        for (let i = 0; i < req.files.length; i++) {
+          var result = await commonFunction.getImageMultipleUrl(
+            req.files[i].path
+          );
+          finalresult.push(result);
+        }
+        validatedBody.Image = finalresult;
+        const res1 = await createGellary(validatedBody);
+        return res.json(new response(responseMessage.GALLERY_CREATED, res1));
       }
-      const result = await createForum(req.body);
-      return res.json(new response(responseMessage.FORUM_CREATED, result));
+      const res2 = await createGellary(validatedBody);
+      return res.json(new response(responseMessage.GALLERY_CREATED, res2));
     } catch (error) {
       console.log(error);
       return next(error);
@@ -95,11 +68,52 @@ export class froumController {
 
   /**
    * @swagger
-   * /forum/editFroum:
+   * /gallery/viewGallery:
+   *   post:
+   *     tags:
+   *       - GALLERY
+   *     description: viewGallery
+   *     produces:
+   *       - application/json
+   *     parameters:
+   *       - name: GalleryID
+   *         description: GalleryID
+   *         in: formData
+   *         required: true
+   *     responses:
+   *       200:
+   *         description: Gallery View successfully
+   *       501:
+   *         description: Something went wrong.
+   *       500:
+   *         description: Internal server error.
+   *
+   */
+  async viewGallery(req, res, next) {
+    try {
+      var validatedBody = await Joi.validate(req.body);
+      const { GalleryID } = validatedBody;
+      var checkGalleryExits = await findGallery({
+        _id: validatedBody.GalleryID,
+      });
+      if (!checkGalleryExits) {
+        throw apiError.notFound(responseMessage.GELLARY_NOT_FOUND);
+      }
+      return res.json(
+        new response(responseMessage.GELLARY_NOT_FOUND, checkGalleryExits)
+      );
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  /**
+   * @swagger
+   * /gallery/editGallery:
    *   put:
    *     tags:
-   *       - Forum And Social_Clubs
-   *     description: editFroum
+   *       - GALLERY
+   *     description: editGallery
    *     produces:
    *       - application/json
    *     parameters:
@@ -107,43 +121,32 @@ export class froumController {
    *         description: token
    *         in: header
    *         required: true
-   *       - name: ForumId
-   *         description: _id
+   *       - name: GalleryID
+   *         description: GalleryID
    *         in: formData
    *         required: true
-   *       - name: name
-   *         description: name
+   *       - name: Name
+   *         description: Name
    *         in: formData
    *         required: true
-   *       - name: description
-   *         description: description
-   *         in: formData
-   *         required: true
-   *       - name: activities
-   *         description: activities
-   *         in: formData
-   *         required: true
-   *       - name: format
-   *         description: format
-   *         in: formData
-   *         required: true
-   *       - name: Photo
-   *         description: Photo
+   *       - name: Image
+   *         description:  multipull Image
    *         in: formData
    *         type: file
    *         required: false
    *     responses:
    *       200:
-   *         description: Forum created successfully
+   *         description: Gallery Updated successfully
    *       501:
    *         description: Something went wrong.
    *       500:
    *         description: Internal server error.
    */
-  async editFroum(req, res, next) {
+
+  async editGallery(req, res, next) {
     try {
       var validatedBody = await Joi.validate(req.body);
-      const { name, description, activities, format, ForumId } = validatedBody;
+      const { Name, GalleryID } = validatedBody;
       console.log({ validatedBody });
       let userResult = await findUser(
         { _id: req.userId },
@@ -152,169 +155,39 @@ export class froumController {
       if (!userResult) {
         throw apiError.notFound(responseMessage.USER_NOT_FOUND);
       }
-      const forumResult = await findForum({ _id: validatedBody.ForumId });
-      if (!forumResult) {
-        throw apiError.notFound(responseMessage.FORUM_NOT_FOUND);
-      }
-      const result = await UpdateForum(
-        { _id: forumResult._id },
-        {
-          $set: {
-            name: name,
-            description: description,
-            activities: activities,
-            format: format,
-          },
-        }
-      );
-      return res.json(new response(responseMessage.FORUM_UPDATED, result));
-    } catch (error) {
-      console.log(error);
-      return next(error);
-    }
-  }
-
-  /**
-   * @swagger
-   * /club/addClub:
-   *   post:
-   *     tags:
-   *       - Forum And Social_Clubs
-   *     description: addClub
-   *     produces:
-   *       - application/json
-   *     parameters:
-   *       - name: token
-   *         description: token
-   *         in: header
-   *         required: true
-   *       - name: name
-   *         description: name
-   *         in: formData
-   *         required: true
-   *       - name: description
-   *         description: description
-   *         in: formData
-   *         required: true
-   *       - name: activities
-   *         description: activities
-   *         in: formData
-   *         required: true
-   *       - name: format
-   *         description: format
-   *         in: formData
-   *         required: true
-   *       - name: Photo
-   *         description: Photo
-   *         in: formData
-   *         type: file
-   *         required: false
-   *     responses:
-   *       200:
-   *         description: Forum created successfully
-   *       501:
-   *         description: Something went wrong.
-   *       500:
-   *         description: Internal server error.
-   */
-  async addClub(req, res, next) {
-    try {
-      var validatedBody = await Joi.validate(req.body);
-      const { name, description, activities, format } = validatedBody;
-      console.log("req.nhg", req.body, req.files);
-      let userResult = await findUser(
-        { _id: req.userId },
-        { userType: userType.ADMIN }
-      );
-      if (!userResult) {
-        throw apiError.notFound(responseMessage.USER_NOT_FOUND);
+      const GalleryResult = await findGallery({ _id: validatedBody.GalleryID });
+      if (!GalleryResult) {
+        throw apiError.notFound(responseMessage.GELLARY_NOT_FOUND);
       }
       if (req.files) {
-        req.body.photo = await commonFunction.getImageUrlUpdated(
-          req.files[0].path
+        var finalresult = [];
+        for (let i = 0; i < req.files.length; i++) {
+          var result = await commonFunction.getImageMultipleUrl(
+            req.files[i].path
+          );
+          finalresult.push(result);
+        }
+        validatedBody.Image = finalresult;
+        const resData = await UpdateGallery(
+          { _id: GalleryResult._id },
+          {
+            $set: {
+              Name: Name,
+              Image: finalresult,
+            },
+          }
         );
-        validatedBody.photo = req.files[0].path;
-        const result = await createClub(req.body);
-        return res.json(new response(responseMessage.CLUB_CREATED, result));
+        return res.json(new response(responseMessage.Gallery_UPDATED, resData));
       }
-      const result = await createClub(req.body);
-      return res.json(new response(responseMessage.CLUB_CREATED, result));
-    } catch (error) {
-      console.log(error);
-      return next(error);
-    }
-  }
-
-  /**
-   * @swagger
-   * /club/editClub:
-   *   put:
-   *     tags:
-   *       - Forum And Social_Clubs
-   *     description: editClub
-   *     produces:
-   *       - application/json
-   *     parameters:
-   *       - name: token
-   *         description: token
-   *         in: header
-   *         required: true
-   *       - name: clubId
-   *         description: _id
-   *         in: formData
-   *         required: true
-   *       - name: name
-   *         description: name
-   *         in: formData
-   *         required: true
-   *       - name: description
-   *         description: description
-   *         in: formData
-   *         required: true
-   *       - name: activities
-   *         description: activities
-   *         in: formData
-   *         required: true
-   *       - name: format
-   *         description: format
-   *         in: formData
-   *         required: true
-   *     responses:
-   *       200:
-   *         description: Forum created successfully
-   *       501:
-   *         description: Something went wrong.
-   *       500:
-   *         description: Internal server error.
-   */
-  async editClub(req, res, next) {
-    try {
-      var validatedBody = await Joi.validate(req.body);
-      const { name, description, activities, format, clubId } = validatedBody;
-      console.log({ validatedBody });
-      let userResult = await findUser(
-        { _id: req.userId },
-        { userType: userType.ADMIN }
-      );
-      if (!userResult) {
-        throw apiError.notFound(responseMessage.USER_NOT_FOUND);
-      }
-      const forumResult = await findClub({ _id: validatedBody.clubId });
-      if (!forumResult) {
-        throw apiError.notFound(responseMessage.CLUB_NOT_FOUND);
-      }
-      const result = await UpdateClub(
-        { _id: forumResult._id },
+      const resData = await UpdateGallery(
+        { _id: GalleryResult._id },
         {
           $set: {
-            name: name,
-            description: description,
-            activities: activities,
-            format: format,
+            Name: Name,
           },
         }
       );
-      return res.json(new response(responseMessage.CLUB_UPDATED, result));
+      return res.json(new response(responseMessage.Gallery_UPDATED, resData));
     } catch (error) {
       console.log(error);
       return next(error);
@@ -322,4 +195,4 @@ export class froumController {
   }
 }
 
-export default new froumController();
+export default new GalleryController();

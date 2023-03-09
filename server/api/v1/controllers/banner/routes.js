@@ -4,10 +4,9 @@ import auth from "../../../../helper/auth";
 import upload from "../../../../helper/uploadHandler";
 
 export default Express.Router()
-  .post("/viewGallery", controller.viewGallery)
+  .post("/viewBanner", controller.viewBanner)
 
-  .use(upload.uploadFile)
-
-  .post("/addGallery", controller.addGallery)
   .use(auth.verifyToken)
-  .put("/editGallery", controller.editGallery);
+  .use(upload.uploadFile)
+  .post("/addBanner", controller.addBanner)
+  .put("/editBanner", controller.editBanner);

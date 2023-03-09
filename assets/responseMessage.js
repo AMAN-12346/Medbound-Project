@@ -187,6 +187,20 @@ module.exports = {
 	ALUMINI_NOT_FOUND : "Mentor NOT found",
 	ALUMINI_FOUND : "Mentor found Successfully",
 
+	GELLARY_NOT_FOUND : "Mentor NOT found",
+	Gallery_UPDATED : "Mentor Updated Successfully...",
+	GALLERY_CREATED : "Gallery created Successfully...",
+
+
+	BANNER_NOT_FOUND : "Banner NOT found",
+	BANNER_UPDATED : "Banner Updated Successfully...",
+	BANNER_CREATED : "Banner created Successfully...",
+
+	TESTIMONIAL_NOT_FOUND: 'TESTIMONIAL not found.',
+	TESTIMONIAL_ADDED: 'TESTIMONIAL Created successfully.',
+
+
+
 
 
 

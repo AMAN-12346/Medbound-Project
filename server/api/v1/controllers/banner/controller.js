@@ -14,17 +14,17 @@ import userType from "../../../../enums/userType";
 const secret = speakeasy.generateSecret({ length: 10 });
 import { userServices } from "../../services/user";
 const { findUser } = userServices;
-import { AluminiServices } from "../../services/Alumini.js";
-const { findAlumini, UpdateAlumini, createAlumini } = AluminiServices;
+import { BannerServices } from "../../services/banner";
+const { findBanner, UpdateBAnner, createBanner } = BannerServices;
 
-export class AluminiController {
+export class bannerController {
   /**
    * @swagger
-   * /alumini/addAlumini:
+   * /banner/addBanner:
    *   post:
    *     tags:
-   *       - ALUMINI
-   *     description: addAlumini
+   *       - BANNER
+   *     description: addBanner
    *     produces:
    *       - application/json
    *     parameters:
@@ -36,10 +36,6 @@ export class AluminiController {
    *         description: Name
    *         in: formData
    *         required: true
-   *       - name: Description
-   *         description: Description
-   *         in: formData
-   *         required: true
    *       - name: Image
    *         description: Image
    *         in: formData
@@ -47,17 +43,16 @@ export class AluminiController {
    *         required: false
    *     responses:
    *       200:
-   *         description: Alumini created successfully
+   *         description: Banner created successfully
    *       501:
    *         description: Something went wrong.
    *       500:
    *         description: Internal server error.
    */
-
-  async addAlumini(req, res, next) {
+  async addBanner(req, res, next) {
     try {
       var validatedBody = await Joi.validate(req.body);
-      const { Name, Description } = validatedBody;
+      const { Name } = validatedBody;
       console.log(validatedBody);
       let userResult = await findUser(
         { _id: req.userId },
@@ -71,11 +66,11 @@ export class AluminiController {
           req.files[0].path
         );
         validatedBody.Image = req.files[0].path;
-        const result = await createAlumini(validatedBody);
-        return res.json(new response(responseMessage.ALUMINI_CREATED, result));
+        const result = await createBanner(validatedBody);
+        return res.json(new response(responseMessage.BANNER_CREATED, result));
       }
-      const result = await createAlumini(validatedBody);
-      return res.json(new response(responseMessage.ALUMINI_CREATED, result));
+      const result = await createBanner(validatedBody);
+      return res.json(new response(responseMessage.BANNER_CREATED, result));
     } catch (error) {
       console.log(error);
       return next(error);
@@ -84,11 +79,11 @@ export class AluminiController {
 
   /**
    * @swagger
-   * /alumini/editAlumini:
+   * /banner/editBanner:
    *   put:
    *     tags:
-   *       - ALUMINI
-   *     description: editAlumini
+   *       - BANNER
+   *     description: editBanner
    *     produces:
    *       - application/json
    *     parameters:
@@ -96,16 +91,12 @@ export class AluminiController {
    *         description: token
    *         in: header
    *         required: true
-   *       - name: AluminiID
-   *         description: AluminiID
+   *       - name: BANNERID
+   *         description: BANNERID
    *         in: formData
    *         required: true
    *       - name: Name
    *         description: Name
-   *         in: formData
-   *         required: true
-   *       - name: Description
-   *         description: Description
    *         in: formData
    *         required: true
    *       - name: Image
@@ -115,17 +106,17 @@ export class AluminiController {
    *         required: false
    *     responses:
    *       200:
-   *         description: Alimini Updated successfully
+   *         description: Banner Updated successfully
    *       501:
    *         description: Something went wrong.
    *       500:
    *         description: Internal server error.
    */
 
-  async editAlumini(req, res, next) {
+  async editBanner(req, res, next) {
     try {
       var validatedBody = await Joi.validate(req.body);
-      const { Name, Description, AluminiID } = validatedBody;
+      const { Name, BANNERID } = validatedBody;
       console.log({ validatedBody });
       let userResult = await findUser(
         { _id: req.userId },
@@ -134,61 +125,77 @@ export class AluminiController {
       if (!userResult) {
         throw apiError.notFound(responseMessage.USER_NOT_FOUND);
       }
-      const forumResult = await findAlumini({ _id: validatedBody.AluminiID });
-      if (!forumResult) {
-        throw apiError.notFound(responseMessage.ALUMINI_NOT_FOUND);
+      const BannerResult = await findBanner({ _id: validatedBody.BANNERID });
+      if (!BannerResult) {
+        throw apiError.notFound(responseMessage.BANNER_NOT_FOUND);
       }
-      const result = await UpdateAlumini(
+      if (req.files) {
+        req.body.Image = await commonFunction.getImageUrlUpdated(
+          req.files[0].path
+        );
+        validatedBody.Image = req.files[0].path;
+
+        const res1 = await UpdateBAnner(
+          { _id: BannerResult._id },
+          {
+            $set: {
+              Name: Name,
+              Image: validatedBody.Image,
+            },
+          }
+        );
+        return res.json(new response(responseMessage.BANNER_UPDATED, res1));
+      }
+      const res1 = await UpdateBAnner(
         { _id: forumResult._id },
         {
           $set: {
-            Name: Name,
-            Description: Description,
+            Name: Name
           },
         }
       );
-      return res.json(new response(responseMessage.ALUMINI_UPDATED, result));
+      return res.json(new response(responseMessage.BANNER_UPDATED, res1));
     } catch (error) {
       console.log(error);
       return next(error);
     }
   }
-  
+
   /**
    * @swagger
-   * /alumini/viewAlumini:
+   * /banner/viewBanner:
    *   post:
    *     tags:
-   *       - ALUMINI
-   *     description: viewAlumini
+   *       - BANNER
+   *     description: viewBanner
    *     produces:
    *       - application/json
    *     parameters:
-   *       - name: AluminiID
-   *         description: AluminiID
+   *       - name: BannerID
+   *         description: BannerID
    *         in: formData
    *         required: true
    *     responses:
    *       200:
-   *         description: Webinar View successfully
+   *         description: Banner View successfully
    *       501:
    *         description: Something went wrong.
    *       500:
    *         description: Internal server error.
    *
    */
-  async viewAlumini(req, res, next) {
+  async viewBanner(req, res, next) {
     try {
       var validatedBody = await Joi.validate(req.body);
-      const { MentorID } = validatedBody;
-      var checkWebinarExits = await findAlumini({
-        _id: validatedBody.AluminiID,
+      const { BannerID } = validatedBody;
+      var checkBannerExits = await findBanner({
+        _id: validatedBody.BannerID,
       });
-      if (!checkWebinarExits) {
-        throw apiError.notFound(responseMessage.ALUMINI_NOT_FOUND);
+      if (!checkBannerExits) {
+        throw apiError.notFound(responseMessage.BANNER_NOT_FOUND);
       }
       return res.json(
-        new response(responseMessage.ALUMINI_FOUND, checkWebinarExits)
+        new response(responseMessage.BANNER_NOT_FOUND, checkBannerExits)
       );
     } catch (error) {
       return next(error);
@@ -196,4 +203,4 @@ export class AluminiController {
   }
 }
 
-export default new AluminiController();
+export default new bannerController();

@@ -13,9 +13,17 @@ import faq from "./api/v1/controllers/faq/routes";
 import blog from "./api/v1/controllers/Blog/routes";
 import medBound from "./api/v1/controllers/MedBoundCMS/routes";
 import medBoundTimes from "./api/v1/controllers/MedBoundTimes/routes";
+
 import subAdmin from "./api/v1/controllers/SubAdmin/routes";
 import helpCenterQuestion from "./api/v1/controllers/helpCenterQuestion/router";
 import helpCenterQuerie from "./api/v1/controllers/helpCenterQuerie/router";
+
+
+import gallery from "./api/v1/controllers/Gallery/routes";
+import alumini from "./api/v1/controllers/Alumni/routes";
+
+import Banner from "./api/v1/controllers/banner/routes";
+import Testimonial from "./api/v1/controllers/faq/routes"
 
 
 
@@ -49,6 +57,12 @@ export default function routes(app) {
   app.use("/api/v1/subAdmin", subAdmin);
   app.use("/api/v1/helpCenterQuestion", helpCenterQuestion);
   app.use("/api/v1/helpCenterQuery", helpCenterQuerie);
+
+  app.use("/api/v1/gallery", gallery);
+  app.use("/api/v1/alumini", alumini);
+
+  app.use("/api/v1/banner", Banner);
+  app.use("/api/v1/Testimonial", Testimonial);
 
   
 
