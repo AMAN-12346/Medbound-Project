@@ -11,13 +11,52 @@ import jwt from "jsonwebtoken";
 import status from "../../../../enums/status";
 import speakeasy from "speakeasy";
 import userType from "../../../../enums/userType";
+import queryHandler from '../../../../helper/query';
 const secret = speakeasy.generateSecret({ length: 10 });
 import { userServices } from "../../services/user";
+
 const { findUser } = userServices;
 import { GalleryServices } from "../../services/GellaryServices";
-const { createGellary, findGallery, UpdateGallery } = GalleryServices;
+const { createGellary, findGallery, UpdateGallery,findGalleryList } = GalleryServices;
 
 export class GalleryController {
+
+  /**
+     * @swagger
+     * /gallery/listGallery:
+     *   get:
+     *     tags:
+     *       - GALLERY
+     *     description: addGallery
+     *     produces:
+     *       - application/json
+     *     responses:
+     *       200:
+     *         description: Returns success message
+     */
+  async listGallery(req, res, next) {
+    try {
+      let query = { status: { $ne: 'DELETE' } }
+      let appen = await queryHandler.queryWithoutPagination(req.query)
+
+      let finalQuery = {
+        ...query,
+        ...appen
+      }
+      let data = await findGalleryList(finalQuery)
+      if (!data) {
+        throw apiError.conflict(responseMessage.DATA_NOT_FOUND);
+      }
+      else {
+        return res.json(new response(data, responseMessage.DATA_FOUND));
+      }
+    } catch (error) {
+      console.log("error ==========> 79", error)
+      return next(error);
+    }
+  }
+
+
   /**
    * @swagger
    * /gallery/addGallery:

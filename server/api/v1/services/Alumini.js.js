@@ -14,6 +14,9 @@ const AluminiServices = {
   findAlumini: async (query) => {
     return await AluminiModel.findOne(query);
   },
+  findList: async (query) => {
+    return await AluminiModel.find(query);
+  },
 };
 
 module.exports = { AluminiServices };

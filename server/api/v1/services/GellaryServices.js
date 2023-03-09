@@ -14,6 +14,9 @@ const GalleryServices = {
   findGallery: async (query) => {
     return await Gallerymodel.findOne(query);
   },
+  findGalleryList: async (query) => {
+    return await Gallerymodel.find(query);
+  },
 };
 
 module.exports = { GalleryServices };

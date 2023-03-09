@@ -15,9 +15,56 @@ const secret = speakeasy.generateSecret({ length: 10 });
 import { userServices } from "../../services/user";
 const { findUser } = userServices;
 import { mentorServices } from "../../services/mentorServices";
-const { createMentor, UpdateMentor, findMentor} = mentorServices;
+const { createMentor, UpdateMentor, findMentor , findList} = mentorServices;
+import queryHandler from '../../../../helper/query';
+
 
 export class MentorController {
+
+
+
+  /**
+   * @swagger
+   * /mentor/listMentor:
+   *   get:
+   *     tags:
+   *       - MENTOR
+   *     description: addMentor
+   *     produces:
+   *       - application/json
+   *     responses:
+   *       200:
+   *         description: Forum created successfully
+   *       501:
+   *         description: Something went wrong.
+   *       500:
+   *         description: Internal server error.
+   */
+
+   async listMentor(req, res, next) {
+       
+    try {
+      let query = {status: { $ne: 'DELETE' } }
+      let appen =  await queryHandler.queryWithoutPagination(req.query)
+
+      let finalQuery = {
+          ...query,
+          ...appen
+      }
+      let data = await findList(finalQuery)
+      if (!data) {
+          throw apiError.conflict(responseMessage.DATA_NOT_FOUND);
+      }
+      else {
+          return res.json(new response(data, responseMessage.DATA_FOUND));
+      }
+  } catch (error) {
+      console.log("error ==========> 79", error)
+      return next(error);
+  }
+  }
+
+
   /**
    * @swagger
    * /mentor/addMentor:

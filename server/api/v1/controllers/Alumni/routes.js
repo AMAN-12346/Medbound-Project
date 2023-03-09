@@ -5,6 +5,7 @@ import upload from "../../../../helper/uploadHandler";
 
 export default Express.Router()
 
+  .get("/listAlumini", controller.listAlumini)
   .post("/viewAlumini", controller.viewAlumini)
 
   .use(auth.verifyToken)

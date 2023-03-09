@@ -12,8 +12,8 @@ import status from '../../../../enums/status';
 import speakeasy from 'speakeasy';
 import userType from "../../../../enums/userType";
 const secret = speakeasy.generateSecret({ length: 10 });
-import { helpCenterQuestionService } from '../../services/helpCenterQuestionService';
 import queryHandler from '../../../../helper/query';
+import { helpCenterQuestionService } from '../../services/helpCenterQuestionService';
 const { create, find, findList, findandUpdate } = helpCenterQuestionService;
 
 

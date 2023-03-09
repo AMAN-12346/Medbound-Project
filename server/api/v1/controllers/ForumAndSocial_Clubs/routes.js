@@ -4,6 +4,9 @@ import auth from "../../../../helper/auth";
 import upload from "../../../../helper/uploadHandler";
 
 export default Express.Router()
+
+.get("/listFroum", controller.listFroum)
+
   .use(upload.uploadFile)
 
   .use(auth.verifyToken)
