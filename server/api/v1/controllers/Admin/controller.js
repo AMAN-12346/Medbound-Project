@@ -445,7 +445,7 @@ export class adminController {
     async dashboard(req, res, next) {
         try {
             // userType: { $in: [userType.ADMIN, userType.SUB_ADMIN, userType.EDITOR, userType.ADVANCED_USER] }
-            let userResult = await FindUser({ _id: req.userId }, { userType: { $in: [userType.ADMIN, userType.SUB_ADMIN] } });
+            let userResult = await FindUser({ _id: req.userId }, { userType: userType.ADMIN });
             if (!userResult) {
                 throw apiError.notFound(responseMessage.USER_NOT_FOUND);
             }
@@ -471,16 +471,17 @@ export class adminController {
                 ExamCount({ userType: userType.USER }),  //.
             ]);
             const obj = {
-                Internship: IntershipsCount,
-                Forums: ForumsCount,
-                Clubs: ClubsrCount,
-                Mentors: MentorsCount,
-                Alumini: AlumniCount,
-                Tutorials: TutorialsCount,
-                BlogsCount: BlogsCount,
-                Exams: ExamCount,
+                Internship: Internship,
+                Forums: Forums,
+                Clubs: Clubs,
+                Mentors: Mentors,
+                Alumini: Alumini,
+                Tutorials: Tutorials,
+                Blogs: Blogs,
+                Exams: Exams,
             };
 
+            console.log(obj);
             return res.json(new response(obj, "responseMessage.DETAILS_FETCHED"));
         } catch (error) {
             console.log("====error", error)
