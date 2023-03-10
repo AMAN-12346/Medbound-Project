@@ -29,6 +29,14 @@ const froumServices = {
       new: true,
     });
   },
+
+  ClubsrCount: async (query) => {
+    return await clubMode.countDocuments(query);
+  },
+  
+  ForumsCount: async (query) => {
+    return await froummodel.countDocuments(query);
+  },
 };
 
 module.exports = { froumServices };

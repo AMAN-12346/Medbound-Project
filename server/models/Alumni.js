@@ -1,6 +1,7 @@
 import Mongoose, { Schema, Types } from "mongoose";
 import mongoosePaginate from "mongoose-paginate";
 import mongooseAggregatePaginate from "mongoose-aggregate-paginate";
+import status from "../enums/status";
 
 var AluminiModel = new Schema(
   {
@@ -14,6 +15,10 @@ var AluminiModel = new Schema(
 
     Image : {
         type : String,
+    },
+    status : {
+      type : String,
+      default :status.ACTIVE
     }
   },
   { timestamps: true }

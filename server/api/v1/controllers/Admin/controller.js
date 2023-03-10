@@ -12,8 +12,36 @@ import status from '../../../../enums/status';
 import speakeasy from 'speakeasy';
 import userType from "../../../../enums/userType";
 const secret = speakeasy.generateSecret({ length: 10 });
+
 import { userServices } from '../../services/user';
-const { userCheck, paginateSearch, insertManyUser, createAddress, checkUserExists, emailMobileExist, createUser, findUser, updateUser, updateUserById, checkSocialLogin } = userServices;
+const { userCheck ,  paginateSearch, FindUser, insertManyUser, createAddress, checkUserExists, emailMobileExist, createUser, findUser, updateUser, updateUserById, checkSocialLogin } = userServices;
+
+import { Internshipservive } from "../../services/Internship"
+const { IntershipsCount, } = Internshipservive; 
+
+import {examModeleService} from "../../services/examModeleService";
+const {ExamCount} = examModeleService;
+
+import {AluminiServices} from "../../services/Alumini.js";
+const {AlumniCount} = AluminiServices;
+
+import {blogServices} from "../../services/blogService";
+const {BlogsCount} = blogServices;
+
+import {tutorialServices} from "../../services/tutorialVideo";
+const {TutorialsCount} = tutorialServices;
+
+import {mentorServices} from "../../services/mentorServices";
+const {MentorsCount} = mentorServices;
+
+import {froumServices} from "../../services/ForumAndSocial_Clubs";
+const {ClubsrCount, ForumsCount} = froumServices;
+
+
+
+
+
+
 
 export class adminController {
 
@@ -391,6 +419,71 @@ export class adminController {
             }
             return res.json(new response(userResult, responseMessage.USER_DETAILS));
         } catch (error) {
+            return next(error);
+        }
+    }
+
+    /**
+ * @swagger
+ * /admin/dashboard:
+ *   get:
+ *     tags:
+ *       - ADMIN
+ *     description: dashboard    
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: token
+ *         description: token
+ *         in: header
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: Returns success message
+ */
+
+    async dashboard(req, res, next) {
+        try {
+            // userType: { $in: [userType.ADMIN, userType.SUB_ADMIN, userType.EDITOR, userType.ADVANCED_USER] }
+            let userResult = await FindUser({ _id: req.userId }, { userType: { $in: [userType.ADMIN, userType.SUB_ADMIN] } });
+            if (!userResult) {
+                throw apiError.notFound(responseMessage.USER_NOT_FOUND);
+            }
+            // const [Internship, Forums, Clubs, Mentors, Alumini, Tutorials, Blogs, Exams] = await Promise.all([
+            //     IntershipsCount({status: { $ne: status.DELETE } }), //..
+            //     ForumsCount({status: { $ne: status.DELETE } }), //.
+            //     ClubsrCount({status: { $ne: status.DELETE } }), //.
+            //     MentorsCount({status: { $ne: status.DELETE } }), //..
+            //     AlumniCount({ status: { $ne: status.DELETE } }), //..
+            //     TutorialsCount({ status: { $ne: status.DELETE } }), //..
+            //     BlogsCount({ userType: userType.USER }), //..
+            //     ExamCount({ userType: userType.USER }),  //.
+            // ]);
+
+            const [Internship, Forums, Clubs, Mentors, Alumini, Tutorials, Blogs, Exams] = await Promise.all([
+                IntershipsCount({status: status.ACTIVE }), //..
+                ForumsCount({status: status.ACTIVE }), //.
+                ClubsrCount({status:status.ACTIVE }), //.
+                MentorsCount({status:status.ACTIVE }), //..
+                AlumniCount({ status: status.ACTIVE }), //..
+                TutorialsCount({ status: status.ACTIVE }), //..
+                BlogsCount({ userType: userType.USER }), //..
+                ExamCount({ userType: userType.USER }),  //.
+            ]);
+            const obj = {
+                Internship: IntershipsCount,
+                Forums: ForumsCount,
+                Clubs: ClubsrCount,
+                Mentors: MentorsCount,
+                Alumini: AlumniCount,
+                Tutorials: TutorialsCount,
+                BlogsCount: BlogsCount,
+                Exams: ExamCount,
+            };
+
+            return res.json(new response(obj, "responseMessage.DETAILS_FETCHED"));
+        } catch (error) {
+            console.log("====error", error)
             return next(error);
         }
     }

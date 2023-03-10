@@ -5,7 +5,7 @@ import Internship from "../../../models/Internship"
 
 
 const Internshipservive = {
-createinternship: async (insertObj) => {
+  createinternship: async (insertObj) => {
     return await Internship.create(insertObj);
   },
 
@@ -21,12 +21,19 @@ createinternship: async (insertObj) => {
     return await Internship.findOne(query);
   },
 
-  Updateinternship : async(query, instaintObj) => {
-    return await Internship.findByIdAndUpdate(query, instaintObj, {new : true});
-},
+  Updateinternship: async (query, instaintObj) => {
+    return await Internship.findByIdAndUpdate(query, instaintObj, { new: true });
+  },
+
+  IntershipsCount: async (query) => {
+    return await Internship.countDocuments(query);
+  },
 
 
-  
+  IntershipsCount: async (query) => {
+    return await Internship.countDocuments(query);
+  },
+
 }
 
 module.exports = { Internshipservive };

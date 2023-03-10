@@ -17,6 +17,10 @@ const examModeleService= {
     return await examListModel.findByIdAndUpdate(query, updateObj, { new: true });
   },
 
+  ExamCount: async (query) => {
+    return await examListModel.countDocuments(query);
+  },
+
 }
 
 module.exports = { examModeleService };

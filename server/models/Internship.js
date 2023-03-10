@@ -20,6 +20,10 @@ var Internship = new Schema(
         link: {
             type: String
         },
+        status : {
+            type :String,
+            default : status.ACTIVE
+        }
 
     },
     { timestamps: true }
