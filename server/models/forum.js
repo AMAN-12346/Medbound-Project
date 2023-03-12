@@ -24,6 +24,10 @@ var forumodel = new Schema(
     },
     photo : {
         type : String
+    }, 
+    status : {
+      type: String,
+      default : status.ACTIVE
     }
   },
   { timestamps: true }

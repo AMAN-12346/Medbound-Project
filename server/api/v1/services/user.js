@@ -34,7 +34,7 @@ const userServices = {
     return await userModel.findOne(query);
   },
 
-  findUser: async (query, instaintOBJ) => {
+  FindUser: async (query, instaintOBJ) => {
     return await userModel.findOne(query,instaintOBJ);
   },
   findCount: async (query) => {

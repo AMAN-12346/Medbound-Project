@@ -1,6 +1,7 @@
 import Mongoose, { Schema, Types } from "mongoose";
 import mongoosePaginate from "mongoose-paginate";
 import mongooseAggregatePaginate from "mongoose-aggregate-paginate";
+import status from "../enums/status";
 
 var Clubodel = new Schema(
   {
@@ -21,6 +22,10 @@ var Clubodel = new Schema(
     },
     photo : {
         type : String
+    },
+    status : {
+      type : String,
+      default : status.ACTIVE
     }
   },
   { timestamps: true }

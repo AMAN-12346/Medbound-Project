@@ -17,6 +17,10 @@ const mentorServices = {
   findList: async (query) => {
     return await mentorModel.find(query);
   },
+
+  MentorsCount: async (query) => {
+    return await mentorModel.countDocuments(query);
+  },
 };
 
 module.exports = { mentorServices };

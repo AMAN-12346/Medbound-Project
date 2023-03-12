@@ -17,6 +17,10 @@ const tutorialServices = {
     return await tutoralVideoCategoryModel.findByIdAndUpdate(query, updateObj, { new: true });
   },
 
+  TutorialsCount: async (query) => {
+    return await tutoralVideoCategoryModel.countDocuments(query);
+  },
+
 }
 
 module.exports = { tutorialServices };

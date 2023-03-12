@@ -22,18 +22,15 @@ const testimonialModel = new Schema({
     enum: [status.ACTIVE, status.BLOCK],
     default: status.ACTIVE,
   },
-  
 });
 
 module.exports = Mongoose.model("Testimonial", testimonialModel);
 
-
-(async () =>{
+(async () => {
   let result = Mongoose.model("Testimonial", testimonialModel).find({});
   if (result.length != 0) {
     console.log("DEFAULT Testimonial content already  Created..😀😀");
-  }
-  else {
+  } else {
     var object1 = {
       Testimonial_no: "Testimonial 1",
       title: "Term And Conditions ",
@@ -55,7 +52,10 @@ module.exports = Mongoose.model("Testimonial", testimonialModel);
         "A term and conditions agreement is the agreement that includes the terms, the rules and the guidelines of acceptable behavior and other useful sections to which users must agree in order to use or access your website and mobioe app.",
     };
 
-    let testimonialResult = Mongoose.model("Testimonial",testimonialModel).create(object1, object2, object3);
+    let testimonialResult = Mongoose.model(
+      "Testimonial",
+      testimonialModel
+    ).create(object1, object2, object3);
     if (testimonialResult) {
       console.log("DEFAULT Testimonial Created..😀😀");
     }

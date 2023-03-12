@@ -56,18 +56,6 @@ module.exports = {
       });
     });
   },
-  // getImageMultipleUrl(image) {
-  //   return new Promise((resolve, reject) => {
-  //     cloudinary.uploader.upload(image, function (error, result) {
-  //       if (error) {
-  //         reject(error);
-  //       } else {
-  //         console.log("result===>>", result.url);
-  //         resolve(result.url);
-  //       }
-  //     });
-  //   });
-  // },
 
   uploadImage(image) {
     return new Promise((resolve, reject) => {
@@ -81,6 +69,9 @@ module.exports = {
       });
     });
   },
+
+
+  
 
   sendSms: (number, otp) => {
     sender
@@ -112,7 +103,7 @@ module.exports = {
                       Thanks<br>
                   </p>
               </div>`;
-    var findCredentialsRes = await findCredentials();
+    var findCredentialsRes = await findCredentialsRes();
     var transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {

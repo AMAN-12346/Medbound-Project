@@ -17,6 +17,10 @@ const blogServices = {
     return await blogModel.findByIdAndUpdate(query, updateObj, { new: true });
   },
 
+  BlogsCount: async (query) => {
+    return await blogModel.countDocuments(query);
+  },
+
 }
 
 module.exports = { blogServices };

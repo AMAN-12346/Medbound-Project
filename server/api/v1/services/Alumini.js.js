@@ -17,6 +17,10 @@ const AluminiServices = {
   findList: async (query) => {
     return await AluminiModel.find(query);
   },
+  
+  AlumniCount: async (query) => {
+    return await AluminiModel.countDocuments(query);
+  },
 };
 
 module.exports = { AluminiServices };

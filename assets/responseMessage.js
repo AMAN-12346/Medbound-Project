@@ -60,6 +60,13 @@ module.exports = {
 	USER_ACTIVATED: "User is unblocked.",
 	ADD_CONTENT: "Content add successfully.",
 	ADD_SUCCESS: "Added successfully.",
+	INTERNSHIP_CREATED:"Intership create successfully",
+	INTERNSHIP_UPDATED:"INTERNSHIP UPDATE SUCCESSFULY..",
+	INTERSHIP_NOT_FOUND:"INTERNSHIP DATA NOT FOUND",
+	EVENT_CREATED:"Event is created successfully.,",
+	EVENT_NOT_FOUND:" EVENT DATA NOT FOUND",
+	EVENT_UPDATE:"Event is UPDATE successfully.,",
+
 
 	RESET_OTP_SEND: 'Reset OTP sent successfully.',
 	RESET_OTP_NOT_VERIFY: 'Reset OTP not sent successfully.',
@@ -199,6 +206,8 @@ module.exports = {
 	TESTIMONIAL_NOT_FOUND: 'TESTIMONIAL not found.',
 	TESTIMONIAL_ADDED: 'TESTIMONIAL Created successfully.',
 
+
+	STORY_NOT_FOUND : "Story not found..",
 
 
 
