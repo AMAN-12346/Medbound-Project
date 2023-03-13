@@ -15,7 +15,7 @@ const secret = speakeasy.generateSecret({ length: 10 });
 import { userServices } from "../../services/user";
 const { findUser } = userServices;
 import { mentorServices } from "../../services/mentorServices";
-const { createMentor, UpdateMentor, findMentor , findList} = mentorServices;
+const { createMentor, UpdateMentor, findMentor, findList } = mentorServices;
 import queryHandler from '../../../../helper/query';
 
 
@@ -41,27 +41,27 @@ export class MentorController {
    *         description: Internal server error.
    */
 
-   async listMentor(req, res, next) {
-       
+  async listMentor(req, res, next) {
+
     try {
-      let query = {status: { $ne: 'DELETE' } }
-      let appen =  await queryHandler.queryWithoutPagination(req.query)
+      let query = { status: { $ne: 'DELETE' } }
+      let appen = await queryHandler.queryWithoutPagination(req.query)
 
       let finalQuery = {
-          ...query,
-          ...appen
+        ...query,
+        ...appen
       }
       let data = await findList(finalQuery)
       if (!data) {
-          throw apiError.conflict(responseMessage.DATA_NOT_FOUND);
+        throw apiError.conflict(responseMessage.DATA_NOT_FOUND);
       }
       else {
-          return res.json(new response(data, responseMessage.DATA_FOUND));
+        return res.json(new response(data, responseMessage.DATA_FOUND));
       }
-  } catch (error) {
+    } catch (error) {
       console.log("error ==========> 79", error)
       return next(error);
-  }
+    }
   }
 
 
@@ -130,8 +130,8 @@ export class MentorController {
         throw apiError.notFound(responseMessage.USER_NOT_FOUND);
       }
       if (req.files) {
-        req.body.Image = await commonFunction.getImageUrlUpdated(req.files[0].path);
-        validatedBody.Image = req.files[0].path;
+        let ResData = await commonFunction.getImageUrlUpdated(req.files[0].path);
+        validatedBody.Image = ResData;
         const result = await createMentor(validatedBody);
         return res.json(new response(responseMessage.MENTOR_CREATED, result));
       }
@@ -202,7 +202,7 @@ export class MentorController {
   async editMentor(req, res, next) {
     try {
       var validatedBody = await Joi.validate(req.body);
-      const {Name,  Desgination, Facebook, Instagram, LinkedIn, Twitter, MentorID } =
+      const { Name, Desgination, Facebook, Instagram, LinkedIn, Twitter, MentorID } =
         validatedBody;
       console.log({ validatedBody });
       let userResult = await findUser(

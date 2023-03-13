@@ -6,13 +6,17 @@ import upload from '../../../../helper/uploadHandler';
 
 export default Express.Router()
 
-.post('/addSubAdmin', controller.addSubAdmin)
+.post('/SubAdminLogin', controller.SubAdminLogin)
 .get('/subAdminList', controller.subAdminList)
-.get('/viewSubAdmin', controller.viewSubAdmin)
+.get('/viewSubAdmin/:_id', controller.viewSubAdmin)
 .put('/editSubAdmin', controller.editSubAdmin)
 .delete('/deleteSubAdmin', controller.deleteSubAdmin)
 .put('/blockUnblockSubAdmin', controller.blockUnblockSubAdmin)
+
+
 .use(auth.verifyToken)
+.post('/addSubAdmin', controller.addSubAdmin)
+
 
 
 

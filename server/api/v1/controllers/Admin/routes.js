@@ -6,12 +6,13 @@ import upload from '../../../../helper/uploadHandler';
 
 export default Express.Router()
 
+.put('/forgotPassword', controller.forgotPassword)
 .post('/verifyOTP', controller.verifyOTP)
 .post('/resendOTP', controller.resendOTP)
-
-.post('/forgotPassword', controller.forgotPassword)
 .put('/resetPassword/:token', controller.resetPassword)
 .post('/userLogin', controller.userLogin)
+
+
 
 .use(auth.verifyToken)
 .get('/getProfile', controller.getProfile)

@@ -1,20 +1,21 @@
 import subAdminModel from "../../../models/subAdminModel";
+import UserModel from "../../../models/user"
 import status from '../../../enums/status';
 import userType from "../../../enums/userType";
 
 
 const subAdminService= {
-  create: async (insertObj) => {
-    return await subAdminModel.create(insertObj);
+  createSub_Admin: async (insertObj) => {
+    return await UserModel.create(insertObj);
   },
-  find : async (query) => {
-    return await subAdminModel.findOne(query);
+  awaitCkeckUserExits : async (query) => {
+    return await UserModel.findOne(query);
   },
   findList : async (query) => {
-    return await subAdminModel.find(query);
+    return await UserModel.find(query);
   },
   findandUpdate : async (query,updateObj) => {
-    return await subAdminModel.findByIdAndUpdate(query, updateObj, { new: true });
+    return await UserModel.findByIdAndUpdate(query, updateObj, { new: true });
   },
 
 }

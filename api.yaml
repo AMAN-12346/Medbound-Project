@@ -246,18 +246,16 @@ definitions:
             file:
               type: string
 
-    
-
-
-  subAdmin:
+  addSubAdmin:
     required:
-
+      - mobileNumber
       - name
       - email
       - password
       - permission
     properties:
-
+      mobileNumber:
+        type: string
       name:
         type: string
       email:
@@ -313,4 +311,3 @@ definitions:
         type: strings
       description:
         type: strings
-

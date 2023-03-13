@@ -18,7 +18,6 @@ const schemaDefination = new schema(
     options
 );
 
-
 schemaDefination.plugin(mongoosePaginate);
 schemaDefination.plugin(mongooseAggregatePaginate);
 module.exports = mongoose.model("faq", schemaDefination);
