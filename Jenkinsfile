@@ -12,6 +12,7 @@ pipeline {
         stage("Deploy") {
             steps {
                 sh "sudo pm2 restart medbound-1967"
+                sh "echo node-medbound.mobiloitte.io"
                 
             }
         }
