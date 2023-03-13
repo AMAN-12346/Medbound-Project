@@ -15,6 +15,10 @@ const secret = speakeasy.generateSecret({ length: 10 });
 import { userServices } from '../../services/user';
 const { userCheck, paginateSearch, findSub_Admin, insertManyUser, createAddress, checkUserExists, emailMobileExist, createUser, findUser, updateUser, updateUserById, checkSocialLogin } = userServices;
 
+import { subAdminService } from '../../services/subAdminService';
+import { Stats } from "fs";
+const { SubAdminList, findList } = subAdminService;
+
 
 export class subAdminController {
 
@@ -154,7 +158,7 @@ export class subAdminController {
      *   get:
      *     tags:
      *       - SubAdmin
-     *     description: SubAdmin
+     *     description: subAdminList
      *     produces:
      *       - application/json
      *     parameters:
@@ -175,20 +179,15 @@ export class subAdminController {
      *         description: Internal server error.
      */
     async subAdminList(req, res, next) {
-
         try {
-
-            let query = { status: { $ne: status.DELETE } }
+            var userResult = await findUser({ _id: req.userId, userType: { $in: [userType.ADMIN, userType.SUB_ADMIN] } })
+            if (!userResult) {
+                throw apiError.notFound(responseMessage.UNAUTHORIZED);
+            }
+            let query = { userType: userType.SUB_ADMIN, status : status.ACTIVE }
             var list = await findList(query);
-            if (!list) {
-                throw apiError.conflict(responseMessage.NOT_FOUND);
-
-            }
-            else {
-
-                return res.json(new response(list, responseMessage.DATA_FOUND));
-
-            }
+            if (list.length == 0) { throw apiError.conflict(responseMessage.NOT_FOUND); }
+            return res.json(new response(list, responseMessage.DATA_FOUND));
         } catch (error) {
             console.log("error ==========> 79", error)
             return next(error);
@@ -198,8 +197,8 @@ export class subAdminController {
 
     /**
  * @swagger
- * /subAdmin/viewSubAdmin/{SubAdminId}:
- *   get:
+ * /subAdmin/viewSubAdmin:
+ *   post:
  *     tags:
  *       - SubAdmin
  *     description: SubAdmin
@@ -210,9 +209,9 @@ export class subAdminController {
  *         description: token
  *         in: header
  *         required: true
- *       - name: SubAdminId
+ *       - name: _id
  *         description: _id
- *         in: path
+ *         in: formData
  *         required: true
  *     responses:
  *       200:
@@ -231,9 +230,14 @@ export class subAdminController {
             _id: Joi.string().required()
         };
         try {
-            const validatedBody = await Joi.validate(req.params, validationSchema);
-            const { SubAdminId } = validatedBody;
-            let query = { _id: SubAdminId, status: status.ACTIVE }
+            const validatedBody = await Joi.validate(req.body, validationSchema);
+            const { _id } = validatedBody;
+            console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Token _id  : ", req.userId);
+            var userResult = await findUser({ _id: req.userId, userType: { $in: [userType.ADMIN, userType.SUB_ADMIN] } })
+            if (!userResult) {
+                throw apiError.notFound(responseMessage.UNAUTHORIZED);
+            }
+            let query = { _id: _id, status: status.ACTIVE }
             let data = await findSub_Admin(query)
             if (!data) {
                 throw apiError.conflict(responseMessage.DATA_NOT_FOUND);
@@ -290,7 +294,6 @@ export class subAdminController {
             email: Joi.string().required(),
             password: Joi.string().required(),
             permission: Joi.object().optional()
-
         };
         try {
             let currentEmail = req.body.email
@@ -305,7 +308,7 @@ export class subAdminController {
             }
             else {
 
-                let result = await findandUpdate({ _id: req.query._id }, validatedBody)
+                let result = await updateUserById({ _id: req.query._id }, validatedBody)
 
                 return res.json(new response(result, responseMessage.UPDATE_SUCCESS));
 
@@ -351,20 +354,16 @@ export class subAdminController {
     async deleteSubAdmin(req, res, next) {
         const validationSchema = {
             _id: Joi.string().required(),
-
-
         };
         try {
             const validatedBody = await Joi.validate(req.query, validationSchema);
-            let query = { _id: req.query._id, status: { $ne: status.DELETE } }
-            let data = await find(query)
-            if (!data) {
-                throw apiError.conflict(responseMessage.DATA_NOT_FOUND);
-            }
-            else {
-                let result = await findandUpdate({ _id: req.query._id }, { status: status.DELETE })
-                return res.json(new response(result, responseMessage.DELETE_SUCCESS));
-            }
+            let query = { _id: req.query._id }
+            let data = await findUser(query)
+            if (!data) { throw apiError.conflict(responseMessage.DATA_NOT_FOUND); }
+            if (data.status == status.DELETE) { throw apiError.conflict(responseMessage.USER_ALLREADY_DELETED) }
+            if (data.status == status.BLOCK) { throw apiError.conflict(responseMessage.USER_BLOCKED) }
+            let result = await updateUserById({ _id: req.query._id }, { status: status.DELETE })
+            return res.json(new response(result, responseMessage.DELETE_SUCCESS));
         } catch (error) {
             console.log("error ==========> 79", error)
             return next(error);
@@ -405,8 +404,6 @@ export class subAdminController {
     async blockUnblockSubAdmin(req, res, next) {
         const validationSchema = {
             _id: Joi.string().required(),
-
-
         };
         try {
             const validatedBody = await Joi.validate(req.query, validationSchema);

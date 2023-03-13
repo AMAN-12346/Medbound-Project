@@ -85,26 +85,23 @@ export class adminController {
             if (!userResult) {
                 throw apiError.notFound(responseMessage.USER_NOT_FOUND);
             }
-            else {
-                if (Date.now() > userResult.otpExpireTime) {
-                    throw apiError.badRequest(responseMessage.OTP_EXPIRED);
-                }
-                if (userResult.otp != otp) {
-                    throw apiError.badRequest(responseMessage.INCORRECT_OTP);
-                }
-                var updateResult = await updateUser({ _id: userResult._id }, { otpVerified: true, isReset: true })
-                var token = await commonFunction.getToken({ _id: updateResult._id, email: updateResult.email, userType: updateResult.userType });
-                var obj = {
-                    _id: updateResult._id,
-                    firstName: updateResult.firstName,
-                    email: updateResult.email,
-                    countryCode: updateResult.countryCode,
-                    mobileNumber: updateResult.mobileNumber,
-                    token: token
-                }
-                return res.json(new response(obj, responseMessage.OTP_VERIFY));
-
+            if (Date.now() > userResult.otpExpireTime) {
+                throw apiError.badRequest(responseMessage.OTP_EXPIRED);
             }
+            if (userResult.otp != otp) {
+                throw apiError.badRequest(responseMessage.INCORRECT_OTP);
+            }
+            var updateResult = await updateUser({ _id: userResult._id }, { otpVerified: true, isReset: true })
+            var token = await commonFunction.getToken({ _id: updateResult._id, email: updateResult.email, userType: updateResult.userType });
+            var obj = {
+                _id: updateResult._id,
+                firstName: updateResult.firstName,
+                email: updateResult.email,
+                countryCode: updateResult.countryCode,
+                mobileNumber: updateResult.mobileNumber,
+                token: token
+            }
+            return res.json(new response(obj, responseMessage.OTP_VERIFY));
         }
         catch (error) {
             return next(error);
@@ -150,9 +147,9 @@ export class adminController {
             } else {
                 let otp = await commonFunction.getOTP();
                 let otpExpireTime = Date.now() + 180000;
-                if (userResult.email == email) {
-                    await commonFunction.sendEmailOtp(email, otp)
-                }
+                // if (userResult.email == email) {
+                //     await commonFunction.sendEmailOtp(email, otp)
+                // }
                 if (userResult.mobileNumber == email) {
                     await commonFunction.sendSms(userResult.countryCode + userResult.mobileNumber, otp);
                 }
@@ -200,7 +197,7 @@ export class adminController {
             var validatedBody = await Joi.validate(req.body, validationSchema);
             const { email } = validatedBody;
             // { $or: [{ email: email }, { mobileNumber: email }] } 
-            var userResult = await findUser( { $or: [{ email: email }, { mobileNumber: email }] } );
+            var userResult = await findUser({ $or: [{ email: email }, { mobileNumber: email }] });
             if (!userResult) {
                 throw apiError.notFound(responseMessage.USER_NOT_FOUND);
             }

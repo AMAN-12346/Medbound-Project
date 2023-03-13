@@ -57,6 +57,7 @@ module.exports = {
 	CLAIM_ADD: 'Claim add succesfully.',
 	FIELD_REQUIRED: 'Fields are required.',
 	USER_BLOCKED: "User is blocked.",
+	USER_ALLREADY_DELETED: "User is Already delete.",
 	USER_ACTIVATED: "User is unblocked.",
 	ADD_CONTENT: "Content add successfully.",
 	ADD_SUCCESS: "Added successfully.",

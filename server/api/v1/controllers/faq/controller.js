@@ -15,7 +15,7 @@ const {
 } = staticServices;
 
 import { TestimonialServices } from "../../services/TestimonialServices";
-const { createTestimonial, findTestimonial, updateTestimonial, createStory, findStory, updateStory} =
+const { createTestimonial, findTestimonial, updateTestimonial, createStory, findStory, updateStory } =
     TestimonialServices;
 
 import { faqServices } from "../../services/faq";
@@ -195,12 +195,19 @@ export class staticController {
      *     produces:
      *       - application/json
      *     parameters:
-     *       - name: addFAQ
-     *         description: addFAQ
-     *         in: body
+     *       - name: category
+     *         description: category
+     *         in: formData
      *         required: true
-     *         schema:
-     *           $ref: '#/definitions/addFAQ'
+     *         enum: ["CATEGORY_1", "CATEGORY_2" , "CATEGORY_3"]
+     *       - name: question
+     *         description: question
+     *         in: formData
+     *         required: true
+     *       - name: answer
+     *         description: answer
+     *         in: formData
+     *         required: true
      *     responses:
      *       200:
      *         description: Returns success message
@@ -209,13 +216,11 @@ export class staticController {
         const validationSchema = {
             question: Joi.string().required(),
             answer: Joi.string().required(),
+            category: Joi.string().required(),
         };
         try {
-            const { question, answer } = await Joi.validate(
-                req.body,
-                validationSchema
-            );
-            const result = await createFAQ({ question: question, answer: answer });
+            const { question, answer, category } = await Joi.validate(req.body, validationSchema)
+            const result = await createFAQ({ question: question, answer: answer, category : category });
             return res.json(new response(result, responseMessage.FAQ_ADDED));
         } catch (error) {
             return next(error);
@@ -596,35 +601,35 @@ export class staticController {
         }
     }
 
-        /**
-     * @swagger
-     * /Story/editStory:
-     *   put:
-     *     tags:
-     *       - TESTIMONIAL MANAGEMENT
-     *     description: editStory
-     *     produces:
-     *       - application/json
-     *     parameters:
-     *       - name: token
-     *         description: token
-     *         in: header
-     *         required: true
-     *       - name: editStory
-     *         description: editStory
-     *         in: body
-     *         required: true
-     *         schema:
-     *           $ref: '#/definitions/editStory'
-     *     responses:
-     *       200:
-     *         description: Returns success message
-     */
+    /**
+ * @swagger
+ * /Story/editStory:
+ *   put:
+ *     tags:
+ *       - TESTIMONIAL MANAGEMENT
+ *     description: editStory
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: token
+ *         description: token
+ *         in: header
+ *         required: true
+ *       - name: editStory
+ *         description: editStory
+ *         in: body
+ *         required: true
+ *         schema:
+ *           $ref: '#/definitions/editStory'
+ *     responses:
+ *       200:
+ *         description: Returns success message
+ */
     async editStory(req, res, next) {
         try {
             const validatedBody = await Joi.validate(req.body);
             const { StoryID, Story_no, title, description } = validatedBody
-            let Res = await findStory({ _id: validatedBody.StoryID },{ status: { $ne: status.DELETE } });
+            let Res = await findStory({ _id: validatedBody.StoryID }, { status: { $ne: status.DELETE } });
             if (Res) {
                 throw apiError.notFound(responseMessage.STORY_NOT_FOUND);
             }
