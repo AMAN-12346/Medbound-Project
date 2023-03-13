@@ -1,9 +1,9 @@
 {
   "port": 1967,
-  "hostAddress": "http://182.72.203.245:8521/",
+  "hostAddress": "https://node-medbound.mobiloitte.io/",
   "databaseHost": "localhost",
   "databasePort": "27017",
-  "databaseName": "medbound-23024067",
+  "databaseName": "medbound-23024067-stag",
   "jwtsecret": "nodejwt",
   "jwtresetsecret": "nodejwt",
   "nodemailer": {
