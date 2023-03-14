@@ -15,7 +15,10 @@ const schemaDefination = new schema(
         question: { type: String },
         answer: { type: String },
         status: { type: String, default: status.ACTIVE },
-        category : { type : String,}
+        categoryId : {
+             type : String,
+            ref :'faqCategoryModel'
+            }
     },
     options
 );

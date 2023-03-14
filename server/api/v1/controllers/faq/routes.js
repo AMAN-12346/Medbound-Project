@@ -16,6 +16,7 @@ export default Express.Router()
   .get("/faqList", controller.faqList)
 
 
+  .get("/listFAQCategory", controller.listFAQCategory)
 
   .use(auth.verifyToken)
   .put("/editFAQ", controller.editFAQ)
@@ -23,3 +24,7 @@ export default Express.Router()
   .delete("/deleteStaticContent", controller.deleteStaticContent)
   .put("/editTestimonial", controller.editTestimonial)
   .put("/editStory", controller.editStory)
+  .post("/addFAQCategory", controller.addFAQCategory)
+  .put("/editFAQCategory", controller.editFAQCategory)
+  .delete("/deleteFAQCategory", controller.deleteFAQCategory)
+  .put("/blockUnblockFAQCategory", controller.blockUnblockFAQCategory)

@@ -26,8 +26,8 @@ export class ExamModuleController {
 * /examModule/listExamModule:
 *   get:
 *     tags:
-*       - HelpCenter
-*     description: HelpCenter
+*       - ExamModule
+*     description: ExamModule
 *     produces:
 *       - application/json
 *     parameters:

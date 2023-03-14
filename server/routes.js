@@ -26,7 +26,9 @@ import Testimonial from "./api/v1/controllers/faq/routes"
 import webinar from "./api/v1/controllers/Webinar/routes"
 import mentor from "./api/v1/controllers/Mentor/routes"
 import internship from "./api/v1/controllers/Internship/routes"
-import event from "./api/v1/controllers/Event/routes"
+import event from "./api/v1/controllers/Event/routes" 
+import examModule from "./api/v1/controllers/ExamModule/routes" 
+import medEduCMS from "./api/v1/controllers/MedicalEduCMSList/router" 
 
 
 
@@ -70,6 +72,8 @@ export default function routes(app) {
   app.use("/api/v1/mentor", mentor);
   app.use("/api/v1/internship", internship);
   app.use("/api/v1/event", event);
+  app.use("/api/v1/examModule", examModule);
+  app.use("/api/v1/medEduCMS", medEduCMS);
 
   
 

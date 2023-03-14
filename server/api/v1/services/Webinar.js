@@ -15,7 +15,7 @@ const WebinarServices = {
     return await WebinarModel.findOne(query);
   },
   findList: async (query) => {
-    return await WebinarModel.find(query);
+    return await WebinarModel.find(query).sort({createdAt : -1});
   },
 };
 
