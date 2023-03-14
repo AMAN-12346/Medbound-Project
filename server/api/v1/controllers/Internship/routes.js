@@ -6,6 +6,7 @@ import upload from '../../../../helper/uploadHandler';
 
 export default Express.Router()
 .post("/viewinternship", controller.viewinternship)
+.get("/listInternship", controller.listInternship)
 
 
 

@@ -5,7 +5,6 @@ import auth from "../../../../helper/auth";
 export default Express.Router()
 
   .post("/addStaticContent", controller.addStaticContent)
-  .put("/editStaticContent", controller.editStaticContent)
   .get("/staticContentList", controller.staticContentList)
   .post("/addTestimonial", controller.addTestimonial)
   .get("/viewTestimonial/:_id", controller.viewTestimonial)
@@ -17,9 +16,22 @@ export default Express.Router()
 
 
 
+  .get("/listFAQCategory", controller.listFAQCategory)
+
+
+
   .use(auth.verifyToken)
+  .put("/editStaticContent", controller.editStaticContent)
   .put("/editFAQ", controller.editFAQ)
   .delete("/deleteFAQ", controller.deleteFAQ)
   .delete("/deleteStaticContent", controller.deleteStaticContent)
   .put("/editTestimonial", controller.editTestimonial)
+
   .put("/editStory", controller.editStory)
+  .post("/addFAQCategory", controller.addFAQCategory)
+  .put("/editFAQCategory", controller.editFAQCategory)
+  .delete("/deleteFAQCategory", controller.deleteFAQCategory)
+  .put("/blockUnblockFAQCategory", controller.blockUnblockFAQCategory)
+
+  .put("/editStory", controller.editStory);
+

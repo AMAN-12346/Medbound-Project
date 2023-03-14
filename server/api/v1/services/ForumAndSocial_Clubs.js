@@ -15,7 +15,7 @@ const froumServices = {
     return await froummodel.findOne(query);
   },
   findList: async (query) => {
-    return await froummodel.find(query);
+    return await froummodel.find(query).sort({createdAt : -1});
   },
   findClub: async (query) => {
     return await froummodel.findOne(query);

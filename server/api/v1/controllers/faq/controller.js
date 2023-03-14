@@ -7,19 +7,14 @@ import responseMessage from "../../../../../assets/responseMessage";
 import axios from "axios";
 
 import { staticServices } from "../../services/static";
-const {
-    createStaticContent,
-    findStaticContent,
-    updateStaticContent,
-    staticContentList,
-} = staticServices;
+const { createStaticContent, findStaticContent, updateStaticContent, staticContentList, } = staticServices;
 
 import { TestimonialServices } from "../../services/TestimonialServices";
 const { createTestimonial, findTestimonial, updateTestimonial, createStory, findStory, updateStory } =
     TestimonialServices;
 
 import { faqServices } from "../../services/faq";
-const { createFAQ, findFAQ, updateFAQ, faqListWithPagination, FAQList } = faqServices;
+const { createFAQ, findFAQ, updateFAQ, faqListWithPagination, FAQList, findFAQCategory, createFAQCategory, updateFAQCategory, FAQListCategory } = faqServices;
 
 import { userServices } from "../../services/user";
 const { findUser } = userServices;
@@ -116,43 +111,50 @@ export class staticController {
 
     /**
      * @swagger
-     * /static/staticContentList:
+     * /static/editStaticContent:
      *   put:
      *     tags:
      *       - STATIC
-     *     description: editStaticContent
+     *     description: edit StaticContent
      *     produces:
      *       - application/json
      *     parameters:
-     *       - name: editStaticContent
-     *         description: editStaticContent
-     *         in: body
+     *       - name: token
+     *         description: token
+     *         in: header
      *         required: true
-     *         schema:
-     *           $ref: '#/definitions/editStaticContent'
+     *       - name: _id
+     *         description: _id
+     *         in: query
+     *         required: true
+     *       - name: description
+     *         description: description
+     *         in: header
+     *         required: true
      *     responses:
      *       200:
      *         description: Returns success message
      */
     async editStaticContent(req, res, next) {
         const validationSchema = {
-            _id: Joi.string().required(),
-            title: Joi.string().optional(),
             description: Joi.string().optional(),
-            url: Joi.string().optional(),
         };
         try {
+            let userResult = await findUser({ _id: req.userId }, { userType: { $in: [userType.ADMIN, userType.SUB_ADMIN] } });
+            if (!userResult) { throw apiError.conflict(responseMessage.UNAUTHORIZED); }
             const validatedBody = await Joi.validate(req.body, validationSchema);
-            let staticRes = await findStaticContent(
-                { _id: req.body._id },
-                { status: { $ne: status.DELETE } }
-            );
-            if (staticRes) throw apiError.notFound(responseMessage.STATIC_NOT_FOUND);
-            const result = await updateStaticContent(
-                { _id: validatedBody._id },
-                validatedBody
-            );
-            return res.json(new response(result, responseMessage.UPDATE_SUCCESS));
+            const { description, } = validatedBody
+            console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>> Query Data ",req.query._id);
+            let staticRes = await findStaticContent({ _id: req.query._id }, { status: status.ACTIVE } );
+            if (!staticRes) throw apiError.notFound(responseMessage.STATIC_NOT_FOUND);
+            const resultData = await updateStaticContent(
+                { _id: req.query._id }, 
+                {
+                    $set: {
+                        description: description,
+                    }
+                });
+            return res.json(new response(resultData, responseMessage.UPDATE_SUCCESS));
         } catch (error) {
             console.log(error);
             return next(error);
@@ -185,6 +187,212 @@ export class staticController {
 
     //**************************  FAQs management Start *****************************************************/
 
+
+    /**
+    * @swagger
+    * /faq/addFAQCategory:
+    *   post:
+    *     tags:
+    *       - FAQ_MANAGEMENT
+    *     description: addFAQ
+    *     produces:
+    *       - application/json
+    *     parameters:
+    *       - name: token
+    *         description: token
+    *         in: header
+    *         required: true
+    *       - name: categoryName
+    *         description: categoryName
+    *         in: formData
+    *         required: true
+    *     responses:
+    *       200:
+    *         description: Returns success message
+    */
+    async addFAQCategory(req, res, next) {
+        const validationSchema = {
+            categoryName: Joi.string().required()
+        };
+        try {
+            const { question, answer, categoryId } = await Joi.validate(req.body, validationSchema)
+            let findCategory = await findFAQCategory({ categoryName: req.body.categoryName, status: { $ne: status.DELETE } })
+            if (findCategory) {
+                throw apiError.notFound(responseMessage.ALREADY_EXITS);
+            }
+            else {
+                const result = await createFAQCategory(req.body);
+                return res.json(new response(result, responseMessage.FAQ_ADDED));
+            }
+
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+
+    /**
+     * @swagger
+     * /faq/editFAQCategory:
+     *   put:
+     *     tags:
+     *       - FAQ_MANAGEMENT
+     *     description: addFAQ
+     *     produces:
+     *       - application/json
+     *     parameters:
+     *       - name: token
+     *         description: token
+     *         in: header
+     *         required: true
+     *       - name: _id
+     *         description: _id
+     *         in: query
+     *         required: true
+     *       - name: categoryName
+     *         description: categoryName
+     *         in: formData
+     *         required: true
+     *     responses:
+     *       200:
+     *         description: Returns success message
+     */
+    async editFAQCategory(req, res, next) {
+        const validationSchema = {
+            categoryName: Joi.string().required()
+        };
+        try {
+            const { categoryName } = await Joi.validate(req.body, validationSchema)
+            let findCategory = await findFAQCategory({ _id: req.query._id, status: { $ne: status.DELETE } })
+            if (!findCategory) {
+                throw apiError.notFound(responseMessage.DATA_NOT_FOUND);
+            }
+            else {
+                const result = await updateFAQCategory({ _id: req.query._id }, req.body);
+                return res.json(new response(result, responseMessage.FAQ_ADDED));
+            }
+
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+
+    /**
+   * @swagger
+   * /faq/deleteFAQCategory:
+   *   delete:
+   *     tags:
+   *       - FAQ_MANAGEMENT
+   *     description: addFAQ
+   *     produces:
+   *       - application/json
+   *     parameters:
+   *       - name: token
+   *         description: token
+   *         in: header
+   *         required: true
+   *       - name: _id
+   *         description: _id
+   *         in: query
+   *         required: true
+   *     responses:
+   *       200:
+   *         description: Returns success message
+   */
+    async deleteFAQCategory(req, res, next) {
+
+        try {
+
+            let findCategory = await findFAQCategory({ _id: req.query._id, status: { $ne: status.DELETE } })
+            if (!findCategory) {
+                throw apiError.notFound(responseMessage.DATA_NOT_FOUND);
+            }
+            else {
+                const result = await updateFAQCategory({ _id: req.query._id }, { status: status.DELETE });
+                return res.json(new response(result, responseMessage.DELETE_SUCCESS));
+            }
+
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+
+
+    /**
+* @swagger
+* /faq/blockUnblockFAQCategory:
+*   put:
+*     tags:
+*       - FAQ_MANAGEMENT
+*     description: addFAQ
+*     produces:
+*       - application/json
+*     parameters:
+*       - name: token
+*         description: token
+*         in: header
+*         required: true
+*       - name: _id
+*         description: _id
+*         in: query
+*         required: true
+*     responses:
+*       200:
+*         description: Returns success message
+*/
+    async blockUnblockFAQCategory(req, res, next) {
+
+        try {
+
+            let findCategory = await findFAQCategory({ _id: req.query._id, status: { $ne: status.DELETE } })
+            if (!findCategory) {
+                throw apiError.notFound(responseMessage.DATA_NOT_FOUND);
+            }
+            else {
+                let statuschanged = findCategory.status == status.ACTIVE ? status.BLOCK : status.ACTIVE
+                const result = await updateFAQCategory({ _id: req.query._id }, { status: statuschanged });
+                return res.json(new response(result, responseMessage.UPDATE_SUCCESS));
+            }
+
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+
+    /**
+    * @swagger
+    * /faq/listFAQCategory:
+    *   get:
+    *     tags:
+    *       - FAQ_MANAGEMENT
+    *     description: addFAQ
+    *     produces:
+    *       - application/json
+    *     responses:
+    *       200:
+    *         description: Returns success message
+    */
+    async listFAQCategory(req, res, next) {
+
+        try {
+
+            let findCategoryList = await FAQListCategory({ status: { $ne: status.DELETE } })
+            if (!findCategoryList || !findCategoryList.length) {
+                throw apiError.notFound(responseMessage.ALREADY_EXITS);
+            }
+            else {
+                return res.json(new response(findCategoryList, responseMessage.FAQ_ADDED));
+            }
+
+        } catch (error) {
+            return next(error);
+        }
+    }
+
+
     /**
      * @swagger
      * /faq/addFAQ:
@@ -195,11 +403,10 @@ export class staticController {
      *     produces:
      *       - application/json
      *     parameters:
-     *       - name: category
-     *         description: category
+     *       - name: categoryId
+     *         description: categoryId
      *         in: formData
      *         required: true
-     *         enum: ["CATEGORY_1", "CATEGORY_2" , "CATEGORY_3"]
      *       - name: question
      *         description: question
      *         in: formData
@@ -212,20 +419,29 @@ export class staticController {
      *       200:
      *         description: Returns success message
      */
-    async addFAQ(req, res, next) {
+     async addFAQ(req, res, next) {
         const validationSchema = {
             question: Joi.string().required(),
             answer: Joi.string().required(),
-            category: Joi.string().required(),
+            categoryId: Joi.string().required(),
         };
         try {
-            const { question, answer, category } = await Joi.validate(req.body, validationSchema)
-            const result = await createFAQ({ question: question, answer: answer, category : category });
-            return res.json(new response(result, responseMessage.FAQ_ADDED));
+            const { question, answer, categoryId } = await Joi.validate(req.body, validationSchema)
+            let findCategory = await findFAQCategory({ _id: req.body.categoryId, status: { $ne: status.DELETE } })
+            console.log();
+            if (!findCategory) {
+                throw apiError.notFound(responseMessage.DATA_NOT_FOUND);
+            }
+            else {
+                const result = await createFAQ({ question: question, answer: answer, categoryId: categoryId });
+                return res.json(new response(result, responseMessage.FAQ_ADDED));
+            }
+
         } catch (error) {
             return next(error);
         }
     }
+
 
     /**
      * @swagger
@@ -276,12 +492,22 @@ export class staticController {
      *         description: token
      *         in: header
      *         required: true
-     *       - name: editFAQ
-     *         description: editFAQ
-     *         in: body
+     *       - name: _id
+     *         description: _id
+     *         in: formData
      *         required: true
-     *         schema:
-     *           $ref: '#/definitions/editFAQ'
+     *       - name: categoryId
+     *         description: categoryId
+     *         in: formData
+     *         required: true
+     *       - name: question
+     *         description: question
+     *         in: formData
+     *         required: true
+     *       - name: answer
+     *         description: answer
+     *         in: formData
+     *         required: true
      *     responses:
      *       200:
      *         description: Returns success message
@@ -289,8 +515,9 @@ export class staticController {
     async editFAQ(req, res, next) {
         const validationSchema = {
             _id: Joi.string().required(),
-            question: Joi.string().optional(),
-            answer: Joi.string().optional(),
+            question: Joi.string().required(),
+            answer: Joi.string().required(),
+            categoryId: Joi.string().required(),
         };
         try {
             const validatedBody = await Joi.validate(req.body, validationSchema);
@@ -299,11 +526,20 @@ export class staticController {
                 { userType: userType.ADMIN }
             );
             if (!adminRes) throw apiError.notFound(responseMessage.USER_NOT_FOUND);
+            let findCategory = await findFAQCategory({ _id: req.body.categoryId, status: { $ne: status.DELETE } })
+
+            if (!findCategory) { 
+              
+                throw apiError.notFound(responseMessage.DATA_NOT_FOUND); 
+            }
             let faqFind = await findFAQ(
                 { _id: validatedBody._id },
                 { status: { $ne: status.DELETE } }
             );
-            if (faqFind) throw apiError.notFound(responseMessage.DATA_NOT_FOUND);
+
+            if (!faqFind) { 
+                throw apiError.notFound(responseMessage.DATA_NOT_FOUND); 
+            }
             const result = await updateFAQ({ _id: faqFind._id }, validatedBody);
             return res.json(new response(result, responseMessage.UPDATE_SUCCESS));
         } catch (error) {

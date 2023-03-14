@@ -15,8 +15,9 @@ import userType from "../../../../enums/userType";
 const secret = speakeasy.generateSecret({ length: 10 });
 import { userServices } from "../../services/user";
 const { findUser } = userServices;
+import queryHandler from '../../../../helper/query';
 import { Internshipservive } from "../../services/Internship";
-const { createinternship, Updateinternship, findinternship } = Internshipservive;
+const { createinternship, Updateinternship, findinternship ,findList} = Internshipservive;
 
 export class internshipController {
   /**
@@ -215,6 +216,50 @@ export class internshipController {
       return next(error);
     }
   }
+
+
+
+
+  /**
+   * @swagger
+   * /internship/listInternship:
+   *   get:
+   *     tags:
+   *       - INTERNSHIP
+   *     description: viewinternship
+   *     produces:
+   *       - application/json
+   *     responses:
+   *       200:
+   *         description: Internship View successfully
+   *       501:
+   *         description: Something went wrong.
+   *       500:
+   *         description: Internal server error.
+   *
+   */
+  async listInternship(req, res, next) {
+   
+    try {
+        let query = {status: { $ne: 'DELETE' } }
+        let appen =  await queryHandler.queryWithoutPagination(req.query)
+
+        let finalQuery = {
+            ...query,
+            ...appen
+        }
+        let data = await findList(finalQuery)
+        if (!data) {
+            throw apiError.conflict(responseMessage.DATA_NOT_FOUND);
+        }
+        else {
+            return res.json(new response(data, responseMessage.DATA_FOUND));
+        }
+    } catch (error) {
+        console.log("error ==========> 79", error)
+        return next(error);
+    }
+}
 }
 
 export default new internshipController();

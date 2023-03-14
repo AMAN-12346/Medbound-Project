@@ -20,6 +20,9 @@ const Internshipservive = {
   findinternship: async (query) => {
     return await Internship.findOne(query);
   },
+  findList: async (query) => {
+    return await Internship.find(query).sort({createdAt:-1});
+  },
 
   Updateinternship: async (query, instaintObj) => {
     return await Internship.findByIdAndUpdate(query, instaintObj, { new: true });
