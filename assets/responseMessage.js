@@ -68,6 +68,9 @@ module.exports = {
 	EVENT_NOT_FOUND:" EVENT DATA NOT FOUND",
 	EVENT_UPDATE:"Event is UPDATE successfully.,",
 
+	DATA_FOUND: 'Data found successfully.',
+	EXAM_UPDATED:"Exam is Updated successfully.,",
+
 
 	RESET_OTP_SEND: 'Reset OTP sent successfully.',
 	RESET_OTP_NOT_VERIFY: 'Reset OTP not sent successfully.',

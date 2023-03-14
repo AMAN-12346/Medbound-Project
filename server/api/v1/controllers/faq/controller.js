@@ -7,12 +7,7 @@ import responseMessage from "../../../../../assets/responseMessage";
 import axios from "axios";
 
 import { staticServices } from "../../services/static";
-const {
-    createStaticContent,
-    findStaticContent,
-    updateStaticContent,
-    staticContentList,
-} = staticServices;
+const { createStaticContent, findStaticContent, updateStaticContent, staticContentList, } = staticServices;
 
 import { TestimonialServices } from "../../services/TestimonialServices";
 const { createTestimonial, findTestimonial, updateTestimonial, createStory, findStory, updateStory } =
@@ -116,43 +111,50 @@ export class staticController {
 
     /**
      * @swagger
-     * /static/staticContentList:
+     * /static/editStaticContent:
      *   put:
      *     tags:
      *       - STATIC
-     *     description: editStaticContent
+     *     description: edit StaticContent
      *     produces:
      *       - application/json
      *     parameters:
-     *       - name: editStaticContent
-     *         description: editStaticContent
-     *         in: body
+     *       - name: token
+     *         description: token
+     *         in: header
      *         required: true
-     *         schema:
-     *           $ref: '#/definitions/editStaticContent'
+     *       - name: _id
+     *         description: _id
+     *         in: query
+     *         required: true
+     *       - name: description
+     *         description: description
+     *         in: header
+     *         required: true
      *     responses:
      *       200:
      *         description: Returns success message
      */
     async editStaticContent(req, res, next) {
         const validationSchema = {
-            _id: Joi.string().required(),
-            title: Joi.string().optional(),
             description: Joi.string().optional(),
-            url: Joi.string().optional(),
         };
         try {
+            let userResult = await findUser({ _id: req.userId }, { userType: { $in: [userType.ADMIN, userType.SUB_ADMIN] } });
+            if (!userResult) { throw apiError.conflict(responseMessage.UNAUTHORIZED); }
             const validatedBody = await Joi.validate(req.body, validationSchema);
-            let staticRes = await findStaticContent(
-                { _id: req.body._id },
-                { status: { $ne: status.DELETE } }
-            );
-            if (staticRes) throw apiError.notFound(responseMessage.STATIC_NOT_FOUND);
-            const result = await updateStaticContent(
-                { _id: validatedBody._id },
-                validatedBody
-            );
-            return res.json(new response(result, responseMessage.UPDATE_SUCCESS));
+            const { description, } = validatedBody
+            console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>> Query Data ",req.query._id);
+            let staticRes = await findStaticContent({ _id: req.query._id }, { status: status.ACTIVE } );
+            if (!staticRes) throw apiError.notFound(responseMessage.STATIC_NOT_FOUND);
+            const resultData = await updateStaticContent(
+                { _id: req.query._id }, 
+                {
+                    $set: {
+                        description: description,
+                    }
+                });
+            return res.json(new response(resultData, responseMessage.UPDATE_SUCCESS));
         } catch (error) {
             console.log(error);
             return next(error);
@@ -220,7 +222,7 @@ export class staticController {
         };
         try {
             const { question, answer, category } = await Joi.validate(req.body, validationSchema)
-            const result = await createFAQ({ question: question, answer: answer, category : category });
+            const result = await createFAQ({ question: question, answer: answer, category: category });
             return res.json(new response(result, responseMessage.FAQ_ADDED));
         } catch (error) {
             return next(error);
