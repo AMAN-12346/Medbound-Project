@@ -44,8 +44,8 @@ export default function routes(app) {
   app.use("/api/v1/forum", forum);
   app.use("/api/v1/club", club);
 
-  app.use("/api/v1/user", user);
-  app.use("/api/v1/admin", admin);
+  // app.use("/api/v1/user", user); 
+  // app.use("/api/v1/admin", admin); 
 
   app.use("/api/v1/tutorialVideo", tutorial);
   app.use("/api/v1/tutorialVideoByCategory", tutorialVideoByCategory);

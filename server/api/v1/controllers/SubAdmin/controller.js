@@ -12,8 +12,12 @@ import status from '../../../../enums/status';
 import speakeasy from 'speakeasy';
 import userType from "../../../../enums/userType";
 const secret = speakeasy.generateSecret({ length: 10 });
+import { userServices } from '../../services/user';
+const { userCheck, paginateSearch, findSub_Admin, insertManyUser, createAddress, checkUserExists, emailMobileExist, createUser, findUser, updateUser, updateUserById, checkSocialLogin } = userServices;
+
 import { subAdminService } from '../../services/subAdminService';
-const { create, find, findList, findandUpdate } = subAdminService;
+import { Stats } from "fs";
+const { SubAdminList, findList } = subAdminService;
 
 
 export class subAdminController {
@@ -25,7 +29,7 @@ export class subAdminController {
  *   post:
  *     tags:
  *       - SubAdmin
- *     description: SubAdmin
+ *     description: addSubAdmin
  *     produces:
  *       - application/json
  *     parameters:
@@ -33,12 +37,12 @@ export class subAdminController {
  *         description: token
  *         in: header
  *         required: true
- *       - name: subAdmin
- *         description: subAdmin
+ *       - name: addSubAdmin
+ *         description: addSubAdmin
  *         in: body
  *         required: true
  *         schema:
- *           $ref: '#/definitions/subAdmin'
+ *           $ref: '#/definitions/addSubAdmin'
  *     responses:
  *       200:
  *         description: User created successfully
@@ -55,27 +59,93 @@ export class subAdminController {
         const validationSchema = {
             name: Joi.string().required(),
             email: Joi.string().required(),
+            mobileNumber: Joi.string().required(),
             password: Joi.string().required(),
             permission: Joi.object().optional()
-
         };
         try {
             const validatedBody = await Joi.validate(req.body, validationSchema);
-            let query = { email: req.body.email, status: { $ne: status.DELETE } }
-            let data = await find(query)
-            if (data) {
-                throw apiError.conflict(responseMessage.ALREADY_EXITS);
-
+            const { mobileNumber, email } = validatedBody
+            var userInfo = await checkUserExists(mobileNumber, email);
+            if (userInfo) {
+                if (userInfo.mobileNumber == mobileNumber) { throw apiError.conflict(responseMessage.MOBILE_EXIST); }
+                throw apiError.conflict(responseMessage.EMAIL_EXIST);
             }
-            else {
-
-                let result = await create(validatedBody)
-
-                return res.json(new response(result, responseMessage.ADD_SUCCESS));
-
-            }
+            validatedBody.userType = userType.SUB_ADMIN;
+            validatedBody.status = status.ACTIVE
+            validatedBody.otp = commonFunction.getOTP();
+            validatedBody.otpExpireTime = Date.now() + 180000;
+            validatedBody.password = bcrypt.hashSync(validatedBody.password);
+            let result = await createUser(validatedBody)
+            return res.json(new response(result, responseMessage.ADD_SUCCESS));
         } catch (error) {
             console.log("error ==========> 79", error)
+            return next(error);
+        }
+    }
+
+
+
+
+    /**
+     * @swagger
+     * /subAdmin/SubAdminLogin:
+     *   post:
+     *     tags:
+     *       - SubAdmin
+     *     description: SubAdminLogin
+     *     produces:
+     *       - application/json
+     *     parameters:
+     *       - name: email
+     *         description: email/mobilenumber
+     *         in: formData
+     *         required: true
+     *       - name: password
+     *         description: password
+     *         in: formData
+     *         required: true
+     *     responses:
+     *       200:
+     *         description: Login successfully.
+     *       402:
+     *         description: Incorrect login credential provided.
+     *       404:
+     *         description: User not found.
+     *       501:
+     *         description: Something went wrong.
+     *       500:
+     *         description: Internal server error.
+     */
+    async SubAdminLogin(req, res, next) {
+        let validationSchema = {
+            email: Joi.string().optional(),
+            password: Joi.string().optional(),
+        }
+        try {
+            let validatedBody = await Joi.validate(req.body, validationSchema);
+            let userResult = await findUser({ $or: [{ email: validatedBody.email }, { mobileNumber: validatedBody.email }], status: status.ACTIVE });
+            if (!userResult) {
+                throw apiError.notFound(responseMessage.USER_NOT_FOUND);
+            }
+            // if (userResult.otpVerified == false || userResult.isReset == false) {
+            //     throw apiError.invalid(responseMessage.INCORRECT_LOGIN);
+            // }
+            if (!bcrypt.compareSync(validatedBody.password, userResult.password)) {
+                throw apiError.invalid(responseMessage.INCORRECT_LOGIN);
+            }
+            let token = await commonFunction.getToken({ _id: userResult._id, email: userResult.email, userType: userResult.userType });
+            let obj = {
+                _id: userResult._id,
+                email: userResult.email,
+                userType: userResult.userType,
+                permission: userResult.permission,
+                token: token,
+
+            }
+            return res.json(new response(obj, responseMessage.LOGIN));
+        } catch (error) {
+            console.log(error);
             return next(error);
         }
     }
@@ -88,7 +158,7 @@ export class subAdminController {
      *   get:
      *     tags:
      *       - SubAdmin
-     *     description: SubAdmin
+     *     description: subAdminList
      *     produces:
      *       - application/json
      *     parameters:
@@ -109,20 +179,15 @@ export class subAdminController {
      *         description: Internal server error.
      */
     async subAdminList(req, res, next) {
-
         try {
-
-            let query = { status: { $ne: status.DELETE } }
+            var userResult = await findUser({ _id: req.userId, userType: { $in: [userType.ADMIN, userType.SUB_ADMIN] } })
+            if (!userResult) {
+                throw apiError.notFound(responseMessage.UNAUTHORIZED);
+            }
+            let query = { userType: userType.SUB_ADMIN, status : status.ACTIVE }
             var list = await findList(query);
-            if (!list) {
-                throw apiError.conflict(responseMessage.NOT_FOUND);
-
-            }
-            else {
-
-                return res.json(new response(list, responseMessage.DATA_FOUND));
-
-            }
+            if (list.length == 0) { throw apiError.conflict(responseMessage.NOT_FOUND); }
+            return res.json(new response(list, responseMessage.DATA_FOUND));
         } catch (error) {
             console.log("error ==========> 79", error)
             return next(error);
@@ -133,7 +198,7 @@ export class subAdminController {
     /**
  * @swagger
  * /subAdmin/viewSubAdmin:
- *   get:
+ *   post:
  *     tags:
  *       - SubAdmin
  *     description: SubAdmin
@@ -146,7 +211,7 @@ export class subAdminController {
  *         required: true
  *       - name: _id
  *         description: _id
- *         in: query
+ *         in: formData
  *         required: true
  *     responses:
  *       200:
@@ -165,15 +230,20 @@ export class subAdminController {
             _id: Joi.string().required()
         };
         try {
-            const validatedBody = await Joi.validate(req.query, validationSchema);
-            let query = { _id: req.query._id, status: { $ne: status.DELETE } }
-            let data = await find(query)
+            const validatedBody = await Joi.validate(req.body, validationSchema);
+            const { _id } = validatedBody;
+            console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Token _id  : ", req.userId);
+            var userResult = await findUser({ _id: req.userId, userType: { $in: [userType.ADMIN, userType.SUB_ADMIN] } })
+            if (!userResult) {
+                throw apiError.notFound(responseMessage.UNAUTHORIZED);
+            }
+            let query = { _id: _id, status: status.ACTIVE }
+            let data = await findSub_Admin(query)
             if (!data) {
                 throw apiError.conflict(responseMessage.DATA_NOT_FOUND);
             }
-            else {
-                return res.json(new response(data, responseMessage.DATA_FOUND));
-            }
+            return res.json(new response(data, responseMessage.DATA_FOUND));
+
         } catch (error) {
             console.log("error ==========> 79", error)
             return next(error);
@@ -224,7 +294,6 @@ export class subAdminController {
             email: Joi.string().required(),
             password: Joi.string().required(),
             permission: Joi.object().optional()
-
         };
         try {
             let currentEmail = req.body.email
@@ -239,7 +308,7 @@ export class subAdminController {
             }
             else {
 
-                let result = await findandUpdate({ _id: req.query._id }, validatedBody)
+                let result = await updateUserById({ _id: req.query._id }, validatedBody)
 
                 return res.json(new response(result, responseMessage.UPDATE_SUCCESS));
 
@@ -285,20 +354,16 @@ export class subAdminController {
     async deleteSubAdmin(req, res, next) {
         const validationSchema = {
             _id: Joi.string().required(),
-
-
         };
         try {
             const validatedBody = await Joi.validate(req.query, validationSchema);
-            let query = { _id: req.query._id, status: { $ne: status.DELETE } }
-            let data = await find(query)
-            if (!data) {
-                throw apiError.conflict(responseMessage.DATA_NOT_FOUND);
-            }
-            else {
-                let result = await findandUpdate({ _id: req.query._id }, { status: status.DELETE })
-                return res.json(new response(result, responseMessage.DELETE_SUCCESS));
-            }
+            let query = { _id: req.query._id }
+            let data = await findUser(query)
+            if (!data) { throw apiError.conflict(responseMessage.DATA_NOT_FOUND); }
+            if (data.status == status.DELETE) { throw apiError.conflict(responseMessage.USER_ALLREADY_DELETED) }
+            if (data.status == status.BLOCK) { throw apiError.conflict(responseMessage.USER_BLOCKED) }
+            let result = await updateUserById({ _id: req.query._id }, { status: status.DELETE })
+            return res.json(new response(result, responseMessage.DELETE_SUCCESS));
         } catch (error) {
             console.log("error ==========> 79", error)
             return next(error);
@@ -339,8 +404,6 @@ export class subAdminController {
     async blockUnblockSubAdmin(req, res, next) {
         const validationSchema = {
             _id: Joi.string().required(),
-
-
         };
         try {
             const validatedBody = await Joi.validate(req.query, validationSchema);
@@ -351,7 +414,7 @@ export class subAdminController {
             }
             else {
                 let changeStatus = data.status == status.ACTIVE ? status.BLOCK : status.ACTIVE
-                let result = await findandUpdate({ _id: req.query._id }, { status: changeStatus})
+                let result = await findandUpdate({ _id: req.query._id }, { status: changeStatus })
                 return res.json(new response(result, `Admin ${changeStatus.toLocaleLowerCase()} successfully`));
             }
         } catch (error) {

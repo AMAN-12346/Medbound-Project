@@ -14,28 +14,28 @@ import userType from "../../../../enums/userType";
 const secret = speakeasy.generateSecret({ length: 10 });
 
 import { userServices } from '../../services/user';
-const { userCheck ,  paginateSearch, FindUser, insertManyUser, createAddress, checkUserExists, emailMobileExist, createUser, findUser, updateUser, updateUserById, checkSocialLogin } = userServices;
+const { userCheck, paginateSearch, FindUser, insertManyUser, createAddress, checkUserExists, emailMobileExist, createUser, findUser, updateUser, updateUserById, checkSocialLogin } = userServices;
 
 import { Internshipservive } from "../../services/Internship"
-const { IntershipsCount, } = Internshipservive; 
+const { IntershipsCount, } = Internshipservive;
 
-import {examModeleService} from "../../services/examModeleService";
-const {ExamCount} = examModeleService;
+import { examModeleService } from "../../services/examModeleService";
+const { ExamCount } = examModeleService;
 
-import {AluminiServices} from "../../services/Alumini.js";
-const {AlumniCount} = AluminiServices;
+import { AluminiServices } from "../../services/Alumini.js";
+const { AlumniCount } = AluminiServices;
 
-import {blogServices} from "../../services/blogService";
-const {BlogsCount} = blogServices;
+import { blogServices } from "../../services/blogService";
+const { BlogsCount } = blogServices;
 
-import {tutorialServices} from "../../services/tutorialVideo";
-const {TutorialsCount} = tutorialServices;
+import { tutorialServices } from "../../services/tutorialVideo";
+const { TutorialsCount } = tutorialServices;
 
-import {mentorServices} from "../../services/mentorServices";
-const {MentorsCount} = mentorServices;
+import { mentorServices } from "../../services/mentorServices";
+const { MentorsCount } = mentorServices;
 
-import {froumServices} from "../../services/ForumAndSocial_Clubs";
-const {ClubsrCount, ForumsCount} = froumServices;
+import { froumServices } from "../../services/ForumAndSocial_Clubs";
+const { ClubsrCount, ForumsCount } = froumServices;
 
 
 
@@ -85,26 +85,23 @@ export class adminController {
             if (!userResult) {
                 throw apiError.notFound(responseMessage.USER_NOT_FOUND);
             }
-            else {
-                if (Date.now() > userResult.otpExpireTime) {
-                    throw apiError.badRequest(responseMessage.OTP_EXPIRED);
-                }
-                if (userResult.otp != otp) {
-                    throw apiError.badRequest(responseMessage.INCORRECT_OTP);
-                }
-                var updateResult = await updateUser({ _id: userResult._id }, { otpVerified: true, isReset: true })
-                var token = await commonFunction.getToken({ _id: updateResult._id, email: updateResult.email, userType: updateResult.userType });
-                var obj = {
-                    _id: updateResult._id,
-                    firstName: updateResult.firstName,
-                    email: updateResult.email,
-                    countryCode: updateResult.countryCode,
-                    mobileNumber: updateResult.mobileNumber,
-                    token: token
-                }
-                return res.json(new response(obj, responseMessage.OTP_VERIFY));
-
+            if (Date.now() > userResult.otpExpireTime) {
+                throw apiError.badRequest(responseMessage.OTP_EXPIRED);
             }
+            if (userResult.otp != otp) {
+                throw apiError.badRequest(responseMessage.INCORRECT_OTP);
+            }
+            var updateResult = await updateUser({ _id: userResult._id }, { otpVerified: true, isReset: true })
+            var token = await commonFunction.getToken({ _id: updateResult._id, email: updateResult.email, userType: updateResult.userType });
+            var obj = {
+                _id: updateResult._id,
+                firstName: updateResult.firstName,
+                email: updateResult.email,
+                countryCode: updateResult.countryCode,
+                mobileNumber: updateResult.mobileNumber,
+                token: token
+            }
+            return res.json(new response(obj, responseMessage.OTP_VERIFY));
         }
         catch (error) {
             return next(error);
@@ -150,9 +147,9 @@ export class adminController {
             } else {
                 let otp = await commonFunction.getOTP();
                 let otpExpireTime = Date.now() + 180000;
-                if (userResult.email == email) {
-                    await commonFunction.sendEmailOtp(email, otp)
-                }
+                // if (userResult.email == email) {
+                //     await commonFunction.sendEmailOtp(email, otp)
+                // }
                 if (userResult.mobileNumber == email) {
                     await commonFunction.sendSms(userResult.countryCode + userResult.mobileNumber, otp);
                 }
@@ -169,7 +166,7 @@ export class adminController {
     /**
      * @swagger
      * /admin/forgotPassword:
-     *   post:
+     *   put:
      *     tags:
      *       - ADMIN
      *     description: forgotPassword
@@ -199,21 +196,21 @@ export class adminController {
         try {
             var validatedBody = await Joi.validate(req.body, validationSchema);
             const { email } = validatedBody;
-            var userResult = await findUser({ $or: [{ email: email }, { mobileNumber: email }] })
+            // { $or: [{ email: email }, { mobileNumber: email }] } 
+            var userResult = await findUser({ $or: [{ email: email }, { mobileNumber: email }] });
             if (!userResult) {
                 throw apiError.notFound(responseMessage.USER_NOT_FOUND);
-            } else {
-                let otp = await commonFunction.getOTP();
-                let otpExpireTime = Date.now() + 180000;
-                if (userResult.email == email) {
-                    await commonFunction.sendEmailOtp(email, otp)
-                }
-                if (userResult.mobileNumber == email) {
-                    await commonFunction.sendSms(userResult.countryCode + userResult.mobileNumber, otp);
-                }
-                var updateResult = await updateUser({ _id: userResult._id }, { otp: otp, otpExpireTime: otpExpireTime, isReset: false });
-                return res.json(new response(updateResult, responseMessage.OTP_SEND));
             }
+            let otp = await commonFunction.getOTP();
+            let otpExpireTime = Date.now() + 180000;
+            // if (userResult.email == email) {
+            //     await commonFunction.sendEmailOtp(email, otp)
+            // }
+            if (userResult.mobileNumber == email) {
+                await commonFunction.sendSms(userResult.countryCode + userResult.mobileNumber, otp);
+            }
+            var updateResult = await updateUser({ _id: userResult._id }, { otp: otp, otpExpireTime: otpExpireTime, isReset: false });
+            return res.json(new response(updateResult, responseMessage.OTP_SEND));
         }
         catch (error) {
             return next(error);
@@ -362,11 +359,11 @@ export class adminController {
         }
         try {
             let validatedBody = await Joi.validate(req.body, validationSchema);
-            let userResult = await findUser({ $or: [{ email: validatedBody.email }, { mobileNumber: validatedBody.email }], status: status.ACTIVE });
+            let userResult = await findUser({ $or: [{ email: validatedBody.email }, { mobileNumber: validatedBody.email }], status: status.ACTIVE, userType: { $in: [userType.ADMIN, userType.SUB_ADMIN] } });
             if (!userResult) {
-                throw apiError.notFound(responseMessage.USER_NOT_FOUND);
+                throw apiError.conflict(responseMessage.UNAUTHORIZED);
             }
-            if (userResult.otpVerified == false || userResult.isReset == false) {
+            if (userResult.otpVerified == false) {
                 throw apiError.invalid(responseMessage.INCORRECT_LOGIN);
             }
             if (!bcrypt.compareSync(validatedBody.password, userResult.password)) {
@@ -461,10 +458,10 @@ export class adminController {
             // ]);
 
             const [Internship, Forums, Clubs, Mentors, Alumini, Tutorials, Blogs, Exams] = await Promise.all([
-                IntershipsCount({status: status.ACTIVE }), //..
-                ForumsCount({status: status.ACTIVE }), //.
-                ClubsrCount({status:status.ACTIVE }), //.
-                MentorsCount({status:status.ACTIVE }), //..
+                IntershipsCount({ status: status.ACTIVE }), //..
+                ForumsCount({ status: status.ACTIVE }), //.
+                ClubsrCount({ status: status.ACTIVE }), //.
+                MentorsCount({ status: status.ACTIVE }), //..
                 AlumniCount({ status: status.ACTIVE }), //..
                 TutorialsCount({ status: status.ACTIVE }), //..
                 BlogsCount({ userType: userType.USER }), //..

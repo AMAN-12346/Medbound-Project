@@ -75,7 +75,7 @@ export class userController {
                 validatedBody.otp = commonFunction.getOTP();
                 validatedBody.otpExpireTime = Date.now() + 180000;
                 validatedBody.password = bcrypt.hashSync(validatedBody.password);
-                validatedBody.refferalCode = commonFunction.makeReferral();
+                // validatedBody.refferalCode = commonFunction.makeReferral();
                 // await commonFunction.sendEmailOtp(email, validatedBody.otp);
                 // await commonFunction.sendSms(validatedBody.countryCode + validatedBody.mobileNumber, validatedBody.otp);
                 var result = await createUser(validatedBody)

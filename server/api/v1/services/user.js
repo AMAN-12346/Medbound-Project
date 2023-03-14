@@ -13,7 +13,7 @@ const userServices = {
     return await userModel.findOne(query);
   },
   emailMobileExist: async (email, mobileNumber) => {
-    let query = { $and: [{ status: { $ne: status.DELETE }, userType: { $in: [userType.ADMIN, userType.SUBADMIN] } }, { $or: [{ email: email }, { mobileNumber: mobileNumber }] }] }
+    let query = { $and: [{ status: { $ne: status.DELETE }, userType: { $in: [userType.ADMIN, userType.SUB_ADMIN] } }, { $or: [{ email: email }, { mobileNumber: mobileNumber }] }] }
     return await userModel.findOne(query);
   },
 
@@ -35,7 +35,7 @@ const userServices = {
   },
 
   FindUser: async (query, instaintOBJ) => {
-    return await userModel.findOne(query,instaintOBJ);
+    return await userModel.findOne(query, instaintOBJ);
   },
   findCount: async (query) => {
     return await userModel.count(query);
@@ -59,7 +59,13 @@ const userServices = {
     let query = { $and: [{ status: { $ne: status.DELETE } }, { _id: { $ne: userId } }, { $or: [{ email: email }, { mobileNumber: mobileNumber }] }] }
     return await userModel.findOne(query);
   },
-  
+
+  findSub_Admin: async (query) => {
+    return await userModel.findOne(query);
+  },
+
+
+
 }
 
 module.exports = { userServices };
