@@ -378,6 +378,7 @@ export class adminController {
                 token: token,
 
             }
+            
             return res.json(new response(obj, responseMessage.LOGIN));
         } catch (error) {
             console.log(error);
